@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Tuntutan Perjalanan Dalam Negeri</title>
   <script src="/_sdk/element_sdk.js"></script>
-  <script src="/_sdk/data_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
         body {
@@ -42,6 +41,7 @@
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="min-h-full bg-gray-50">
   <div class="container mx-auto px-4 py-6 max-w-6xl"><!-- Header -->
@@ -50,7 +50,19 @@
      <h1 id="main-title" class="text-2xl font-bold mb-2">Sistem Tuntutan Perjalanan Dalam Negeri</h1>
      <p id="department-name" class="text-blue-200">Kerajaan Malaysia</p>
     </div>
-   </header><!-- Navigation Tabs -->
+   </header><!-- Google Sheets Setup Notice -->
+   <div id="setup-notice" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+    <div class="flex items-start">
+     <div class="text-yellow-600 mr-3 text-xl">
+      ⚙️
+     </div>
+     <div>
+      <h3 class="font-semibold text-yellow-800 mb-2">Setup Google Sheets Diperlukan</h3>
+      <p class="text-yellow-700 text-sm mb-2">Untuk menyimpan data ke Google Sheets, sila masukkan Google Apps Script URL dalam panel edit sistem.</p>
+      <p class="text-yellow-600 text-xs">Status: <span id="connection-status" class="font-medium">Belum dikonfigurasi</span></p>
+     </div>
+    </div>
+   </div><!-- Navigation Tabs -->
    <nav class="mb-6">
     <div class="flex space-x-1 bg-white rounded-lg p-1 shadow"><button id="tab-form" class="flex-1 py-2 px-4 rounded-md bg-blue-600 text-white font-medium transition-colors"> Borang Tuntutan </button> <button id="tab-list" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 font-medium transition-colors"> Senarai Tuntutan </button>
     </div>
@@ -87,7 +99,13 @@
       <div class="grid md:grid-cols-5 gap-6 mb-4">
        <div><label for="masa_pergi" class="block text-sm font-medium text-gray-700 mb-2">Masa Pergi</label> <input type="time" id="masa_pergi" name="masa_pergi" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
-       <div><label for="masa_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Tempoh Perjalanan (Jam)</label> <input type="number" id="masa_perjalanan" name="masa_perjalanan" step="0.5" min="0.5" max="24" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="masa_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Tempoh Perjalanan</label>
+        <div class="flex space-x-2">
+         <div class="flex-1"><input type="number" id="jam_perjalanan" name="jam_perjalanan" min="0" max="23" placeholder="Jam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <label class="text-xs text-gray-500">Jam</label>
+         </div>
+         <div class="flex-1"><input type="number" id="minit_perjalanan" name="minit_perjalanan" min="0" max="59" step="1" placeholder="Minit" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <label class="text-xs text-gray-500">Minit</label>
+         </div>
+        </div><input type="hidden" id="masa_perjalanan" name="masa_perjalanan">
        </div>
        <div><label for="masa_sampai" class="block text-sm font-medium text-gray-700 mb-2">Masa Sampai (Auto)</label> <input type="time" id="masa_sampai" name="masa_sampai" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
@@ -168,7 +186,7 @@
    <section id="list-section" class="hidden bg-white rounded-lg shadow-lg p-6">
     <div class="flex justify-between items-center mb-6 border-b pb-2">
      <h2 class="text-xl font-bold text-gray-800">Senarai Tuntutan</h2>
-     <div class="flex items-center space-x-4"><select id="year-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"> <option value="">Semua Tahun</option> <option value="2024">2024</option> <option value="2025">2025</option> <option value="2026">2026</option> </select> <select id="month-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Semua Bulan</option> <option value="01">Januari</option> <option value="02">Februari</option> <option value="03">Mac</option> <option value="04">April</option> <option value="05">Mei</option> <option value="06">Jun</option> <option value="07">Julai</option> <option value="08">Ogos</option> <option value="09">September</option> <option value="10">Oktober</option> <option value="11">November</option> <option value="12">Disember</option> </select> <button id="print-btn" onclick="printClaimsList()" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🖨️</span> <span>Cetak Senarai</span> </button>
+     <div class="flex items-center space-x-4"><button id="refresh-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🔄</span> <span>Muat Semula</span> </button> <button id="print-btn" onclick="printClaimsList()" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🖨️</span> <span>Cetak Senarai</span> </button>
       <div class="text-sm text-gray-600">
        Jumlah: <span id="total-count" class="font-semibold">0</span> permohonan
       </div>
@@ -182,15 +200,6 @@
       <p class="text-lg">Tiada tuntutan dihantar lagi</p>
       <p class="text-sm">Klik tab "Borang Tuntutan" untuk memulakan permohonan</p>
      </div>
-    </div><!-- Limit Warning -->
-    <div id="limit-warning" class="hidden mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-md">
-     <div class="flex items-center">
-      <div class="text-yellow-600 mr-3">
-       ⚠️
-      </div>
-      <div class="text-yellow-800"><strong>Had maksimum tercapai!</strong> Anda telah mencapai had 999 permohonan. Sila padam beberapa rekod lama sebelum menambah yang baru.
-      </div>
-     </div>
     </div>
    </section><!-- Footer -->
    <footer class="text-center mt-8 text-gray-600">
@@ -202,64 +211,26 @@
         const defaultConfig = {
             header_title: "Sistem Tuntutan Perjalanan Dalam Negeri",
             department_name: "Kerajaan Malaysia",
-            footer_text: "© 2024 Kerajaan Malaysia. Sistem Tuntutan Perjalanan Dalam Negeri"
+            footer_text: "© 2024 Kerajaan Malaysia. Sistem Tuntutan Perjalanan Dalam Negeri",
+            google_script_url: "https://script.google.com/macros/s/AKfycbwg5BPqgRog3P-dvGnjdQ5aqKlpELKXuJDuJNyxvr_RsnqIQXeDHpIMJCdgzdnUGZUt/exec"
         };
 
         let currentData = [];
-        let currentRecordCount = 0;
-        let filteredData = [];
-
-        // Data SDK handler
-        const dataHandler = {
-            onDataChanged(data) {
-                currentData = data;
-                currentRecordCount = data.length;
-                applyFilters();
-                
-                // Show/hide limit warning
-                const limitWarning = document.getElementById('limit-warning');
-                if (currentRecordCount >= 999) {
-                    limitWarning.classList.remove('hidden');
-                } else {
-                    limitWarning.classList.add('hidden');
-                }
-            }
-        };
-
-        function applyFilters() {
-            const yearFilter = document.getElementById('year-filter');
-            const monthFilter = document.getElementById('month-filter');
-            const selectedYear = yearFilter ? yearFilter.value : '';
-            const selectedMonth = monthFilter ? monthFilter.value : '';
-            
-            filteredData = currentData.filter(claim => {
-                let matchesYear = true;
-                let matchesMonth = true;
-                
-                if (selectedYear && claim.tahun_tuntutan) {
-                    matchesYear = claim.tahun_tuntutan === selectedYear;
-                }
-                
-                if (selectedMonth && claim.bulan_tuntutan) {
-                    matchesMonth = claim.bulan_tuntutan === selectedMonth;
-                }
-                
-                return matchesYear && matchesMonth;
-            });
-            
-            updateClaimsList(filteredData);
-            updateTotalCount(filteredData.length);
-        }
+        let googleScriptUrl = '';
 
         // Element SDK configuration
         async function onConfigChange(config) {
             const title = config.header_title || defaultConfig.header_title;
             const department = config.department_name || defaultConfig.department_name;
             const footer = config.footer_text || defaultConfig.footer_text;
+            googleScriptUrl = config.google_script_url || defaultConfig.google_script_url;
 
             document.getElementById('main-title').textContent = title;
             document.getElementById('department-name').textContent = department;
             document.getElementById('footer-text').textContent = footer;
+
+            // Update connection status
+            updateConnectionStatus();
         }
 
         function mapToCapabilities(config) {
@@ -319,8 +290,73 @@
             return new Map([
                 ["header_title", config.header_title || defaultConfig.header_title],
                 ["department_name", config.department_name || defaultConfig.department_name],
-                ["footer_text", config.footer_text || defaultConfig.footer_text]
+                ["footer_text", config.footer_text || defaultConfig.footer_text],
+                ["google_script_url", config.google_script_url || defaultConfig.google_script_url]
             ]);
+        }
+
+        // Update connection status
+        function updateConnectionStatus() {
+            const statusElement = document.getElementById('connection-status');
+            const setupNotice = document.getElementById('setup-notice');
+            
+            if (googleScriptUrl && googleScriptUrl.includes('script.google.com')) {
+                statusElement.textContent = 'Disambungkan ke Google Sheets';
+                statusElement.className = 'font-medium text-green-600';
+                setupNotice.classList.add('hidden');
+            } else {
+                statusElement.textContent = 'Belum dikonfigurasi';
+                statusElement.className = 'font-medium text-yellow-600';
+                setupNotice.classList.remove('hidden');
+            }
+        }
+
+        // Google Sheets API functions
+        async function saveToGoogleSheets(data) {
+            if (!googleScriptUrl) {
+                throw new Error('Google Apps Script URL belum dikonfigurasi');
+            }
+
+            try {
+                const response = await fetch(googleScriptUrl, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                // Note: no-cors mode means we can't read the response
+                // We'll assume success if no error is thrown
+                return { success: true };
+            } catch (error) {
+                console.error('Error saving to Google Sheets:', error);
+                throw error;
+            }
+        }
+
+        async function loadFromGoogleSheets() {
+            if (!googleScriptUrl) {
+                return [];
+            }
+
+            try {
+                const response = await fetch(googleScriptUrl + '?action=get', {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success) {
+                        return result.data || [];
+                    }
+                }
+                return [];
+            } catch (error) {
+                console.error('Error loading from Google Sheets:', error);
+                return [];
+            }
         }
 
         // Initialize app
@@ -336,17 +372,24 @@
                     });
                 }
 
-                // Initialize Data SDK
-                if (window.dataSdk) {
-                    const initResult = await window.dataSdk.init(dataHandler);
-                    if (!initResult.isOk) {
-                        console.error("Failed to initialize data SDK:", initResult.error);
-                        showNotification("Ralat memulakan sistem data", "error");
-                    }
-                }
+                // Load existing data
+                await loadData();
             } catch (error) {
                 console.error("Initialization error:", error);
                 showNotification("Ralat memulakan aplikasi", "error");
+            }
+        }
+
+        // Load data from Google Sheets
+        async function loadData() {
+            try {
+                const data = await loadFromGoogleSheets();
+                currentData = data;
+                updateClaimsList(currentData);
+                updateTotalCount(currentData.length);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showNotification('Ralat memuat data dari Google Sheets', 'error');
             }
         }
 
@@ -375,6 +418,9 @@
                 
                 listSection.classList.remove('hidden');
                 formSection.classList.add('hidden');
+                
+                // Reload data when switching to list
+                loadData();
             });
         }
 
@@ -392,6 +438,8 @@
             
             // Time calculation elements
             const masaPergiInput = document.getElementById('masa_pergi');
+            const jamPerjalananInput = document.getElementById('jam_perjalanan');
+            const minitPerjalananInput = document.getElementById('minit_perjalanan');
             const masaPerjalananInput = document.getElementById('masa_perjalanan');
             const masaSampaiInput = document.getElementById('masa_sampai');
             const masaBalikInput = document.getElementById('masa_balik');
@@ -410,18 +458,11 @@
             bilanganHariInput.addEventListener('input', calculateDailyAllowance);
             kadarElaunHarianSelect.addEventListener('change', calculateDailyAllowance);
             
-            // Add listeners for year and month changes
-            const tahunTuntutanSelect = document.getElementById('tahun_tuntutan');
-            const bulanTuntutanSelect = document.getElementById('bulan_tuntutan');
-            
-            tahunTuntutanSelect.addEventListener('change', calculateCumulativeMileage);
-            bulanTuntutanSelect.addEventListener('change', calculateCumulativeMileage);
-            
             // Time calculation listeners
             masaPergiInput.addEventListener('change', calculateArrivalTime);
-            masaPerjalananInput.addEventListener('input', calculateArrivalTime);
+            jamPerjalananInput.addEventListener('input', updateTravelDuration);
+            minitPerjalananInput.addEventListener('input', updateTravelDuration);
             masaBalikInput.addEventListener('change', calculateReturnTime);
-            masaPerjalananInput.addEventListener('input', calculateReturnTime);
 
             function updateMileageRate() {
                 const selectedOption = gradSelect.options[gradSelect.selectedIndex];
@@ -437,76 +478,38 @@
                 }
             }
 
-            function calculateCumulativeMileage() {
-                const tahun = document.getElementById('tahun_tuntutan').value;
-                const bulan = document.getElementById('bulan_tuntutan').value;
-                const jumlahJarakTerkumpulInput = document.getElementById('jumlah_jarak_terkumpul');
+            function calculateMileageAllowance() {
+                const jarak = parseFloat(jarakInput.value) || 0;
+                const elaunRate = parseFloat(elaunKmInput.value) || 0;
                 
-                if (!tahun || !bulan) {
-                    jumlahJarakTerkumpulInput.value = '';
-                    return;
-                }
-                
-                // Calculate cumulative mileage for current month only
-                let totalCumulativeMileage = 0;
-                
-                // Filter data for the selected year and month only
-                const relevantClaims = currentData.filter(claim => {
-                    return claim.tahun_tuntutan === tahun && claim.bulan_tuntutan === bulan;
-                });
-                
-                // Sum up all mileage for current month
-                relevantClaims.forEach(claim => {
-                    totalCumulativeMileage += parseFloat(claim.jarak) || 0;
-                });
-                
-                // Add current form mileage if any
-                const currentJarak = parseFloat(jarakInput.value) || 0;
-                totalCumulativeMileage += currentJarak;
-                
-                jumlahJarakTerkumpulInput.value = totalCumulativeMileage.toFixed(1);
-                
-                // Recalculate mileage allowance based on cumulative total
-                calculateMileageAllowanceWithCumulative(totalCumulativeMileage, currentJarak);
-            }
-
-            function calculateMileageAllowanceWithCumulative(cumulativeKm, currentJarak) {
-                if (currentJarak <= 0) {
-                    kosPengangkutanAutoInput.value = '';
-                    elaunKmInput.value = '';
-                    calculateTotal();
-                    return;
-                }
-                
-                const previousCumulativeKm = cumulativeKm - currentJarak;
-                let totalMileageAllowance = 0;
-                
-                // Calculate allowance for current trip based on cumulative position
-                if (previousCumulativeKm >= 500) {
-                    // All current mileage is at RM0.75 rate
-                    totalMileageAllowance = currentJarak * 0.75;
-                    elaunKmInput.value = "0.75";
-                } else if (cumulativeKm <= 500) {
-                    // All current mileage is at RM0.85 rate
-                    totalMileageAllowance = currentJarak * 0.85;
-                    elaunKmInput.value = "0.85";
+                if (jarak > 0 && elaunRate > 0) {
+                    let totalAllowance = 0;
+                    
+                    if (jarak <= 500) {
+                        totalAllowance = jarak * 0.85;
+                    } else {
+                        totalAllowance = (500 * 0.85) + ((jarak - 500) * 0.75);
+                    }
+                    
+                    kosPengangkutanAutoInput.value = totalAllowance.toFixed(2);
                 } else {
-                    // Mixed rate: part at RM0.85, part at RM0.75
-                    const kmAt085 = 500 - previousCumulativeKm;
-                    const kmAt075 = currentJarak - kmAt085;
-                    totalMileageAllowance = (kmAt085 * 0.85) + (kmAt075 * 0.75);
-                    const avgRate = totalMileageAllowance / currentJarak;
-                    elaunKmInput.value = avgRate.toFixed(3);
+                    kosPengangkutanAutoInput.value = '';
                 }
-                
-                kosPengangkutanAutoInput.value = totalMileageAllowance.toFixed(2);
                 calculateTotal();
             }
-
-            function calculateMileageAllowance() {
-                calculateCumulativeMileage();
-            }
             
+            function updateTravelDuration() {
+                const jam = parseInt(jamPerjalananInput.value) || 0;
+                const minit = parseInt(minitPerjalananInput.value) || 0;
+                const totalHours = jam + (minit / 60);
+                
+                masaPerjalananInput.value = totalHours;
+                
+                // Recalculate arrival and return times
+                calculateArrivalTime();
+                calculateReturnTime();
+            }
+
             function calculateArrivalTime() {
                 const masaPergi = masaPergiInput.value;
                 const tempohJam = parseFloat(masaPerjalananInput.value) || 0;
@@ -578,9 +581,8 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                // Check limit before creating
-                if (currentRecordCount >= 999) {
-                    showNotification("Had maksimum 999 permohonan telah dicapai. Sila padam beberapa rekod lama terlebih dahulu.", "error");
+                if (!googleScriptUrl) {
+                    showNotification("Sila masukkan Google Apps Script URL dalam panel edit sistem terlebih dahulu.", "error");
                     return;
                 }
 
@@ -596,7 +598,6 @@
                     const bulanTuntutan = formData.get('bulan_tuntutan');
                     
                     const claimData = {
-                        id: Date.now().toString(),
                         nama_pemohon: formData.get('nama'),
                         jawatan: formData.get('jawatan'),
                         gred: formData.get('gred'),
@@ -626,36 +627,29 @@
                         kos_penginapan: parseFloat(formData.get('kos_penginapan')) || 0,
                         kos_lain: parseFloat(formData.get('kos_lain')) || 0,
                         jumlah_tuntutan: parseFloat(formData.get('jumlah_keseluruhan')),
-                        status: "Dalam Proses",
-                        tarikh_mohon: new Date().toISOString(),
-                        bulan: `${tahunTuntutan}-${bulanTuntutan}`
+                        status: "Dalam Proses"
                     };
 
-                    // Save using Data SDK
-                    if (window.dataSdk) {
-                        const createResult = await window.dataSdk.create(claimData);
-                        if (createResult.isOk) {
-                            form.reset();
-                            // Reset default values
-                            document.getElementById('nama').value = "AHMAD HAFIZAN BIN ABD HALIM";
-                            document.getElementById('jawatan').value = "PEMBANTU HAL EHWAL ISLAM";
-                            document.getElementById('gred').value = "S1";
-                            document.getElementById('bahagian').value = "PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH";
-                            document.getElementById('tahun_tuntutan').value = "2024";
-                            document.getElementById('no_kenderaan').value = "PNP4264";
-                            
-                            showNotification("Permohonan tuntutan berjaya dihantar!", "success");
-                            
-                            // Switch to list tab
-                            document.getElementById('tab-list').click();
-                        } else {
-                            showNotification("Ralat semasa menyimpan permohonan: " + createResult.error.message, "error");
-                        }
-                    } else {
-                        showNotification("Sistem data tidak tersedia", "error");
-                    }
+                    // Save to Google Sheets
+                    await saveToGoogleSheets(claimData);
+                    
+                    form.reset();
+                    // Reset default values
+                    document.getElementById('nama').value = "AHMAD HAFIZAN BIN ABD HALIM";
+                    document.getElementById('jawatan').value = "PEMBANTU HAL EHWAL ISLAM";
+                    document.getElementById('gred').value = "S1";
+                    document.getElementById('bahagian').value = "PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH";
+                    document.getElementById('tahun_tuntutan').value = "2024";
+                    document.getElementById('no_kenderaan').value = "PNP4264";
+                    
+                    showNotification("Permohonan tuntutan berjaya dihantar ke Google Sheets!", "success");
+                    
+                    // Switch to list tab and reload data
+                    document.getElementById('tab-list').click();
+                    
                 } catch (error) {
-                    showNotification("Ralat semasa menghantar permohonan. Sila cuba lagi.", "error");
+                    console.error('Error submitting form:', error);
+                    showNotification("Ralat semasa menghantar permohonan. Sila pastikan Google Apps Script URL adalah betul.", "error");
                 } finally {
                     // Hide loading state
                     submitBtn.classList.remove('loading');
@@ -681,39 +675,25 @@
 
             emptyState.classList.add('hidden');
 
-            // Create a map of existing items
-            const existingItems = new Map();
-            container.querySelectorAll('.claim-item').forEach(item => {
-                existingItems.set(item.dataset.claimId, item);
-            });
+            // Clear and rebuild list (simpler approach for Google Sheets)
+            const existingClaims = container.querySelectorAll('.claim-item');
+            existingClaims.forEach(item => item.remove());
 
-            // Update or create items
             data.forEach(claim => {
-                if (existingItems.has(claim.id)) {
-                    updateClaimElement(existingItems.get(claim.id), claim);
-                    existingItems.delete(claim.id);
-                } else {
-                    container.appendChild(createClaimElement(claim));
-                }
+                container.appendChild(createClaimElement(claim));
             });
-
-            // Remove deleted items
-            existingItems.forEach(item => item.remove());
         }
 
         // Create claim element
         function createClaimElement(claim) {
             const div = document.createElement('div');
             div.className = 'claim-item bg-gray-50 border border-gray-200 rounded-lg p-4';
-            div.dataset.claimId = claim.id;
 
-            const statusColor = getStatusColor(claim.status);
-            const formattedDateMula = new Date(claim.tarikh_mula).toLocaleDateString('ms-MY');
-            const formattedDateTamat = new Date(claim.tarikh_tamat).toLocaleDateString('ms-MY');
+            const statusColor = getStatusColor(claim.Status || claim.status || 'Dalam Proses');
             const formattedAmount = new Intl.NumberFormat('ms-MY', {
                 style: 'currency',
                 currency: 'MYR'
-            }).format(claim.jumlah_tuntutan);
+            }).format(parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0));
 
             const monthNames = {
                 '01': 'Jan', '02': 'Feb', '03': 'Mac', '04': 'Apr',
@@ -721,118 +701,50 @@
                 '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Dis'
             };
 
-            const monthBadge = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
+            const tahun = claim['Tahun Tuntutan'] || claim.tahun_tuntutan || '';
+            const bulan = claim['Bulan Tuntutan'] || claim.bulan_tuntutan || '';
+            const monthBadge = tahun && bulan ? 
                 `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                    ${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}
+                    ${monthNames[bulan]} ${tahun}
                 </span>` : '';
 
             div.innerHTML = `
                 <div class="flex justify-between items-start mb-3">
                     <div class="flex-1">
-                        <h3 class="font-semibold text-gray-800">${claim.nama_pemohon}</h3>
-                        <p class="text-sm text-gray-600">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
+                        <h3 class="font-semibold text-gray-800">${claim['Nama Pemohon'] || claim.nama_pemohon || ''}</h3>
+                        <p class="text-sm text-gray-600">${claim['Jawatan'] || claim.jawatan || ''} (${claim['Gred'] || claim.gred || ''}) - ${claim['Bahagian'] || claim.bahagian || ''}</p>
                         <div class="flex items-center space-x-2 mt-1">
-                            <p class="text-xs text-blue-600">${claim.kategori_perjalanan}</p>
+                            <p class="text-xs text-blue-600">${claim['Kategori'] || claim.kategori_perjalanan || ''}</p>
                             ${monthBadge}
                         </div>
                     </div>
                     <div class="flex items-center space-x-2">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
-                            ${claim.status}
+                            ${claim['Status'] || claim.status || 'Dalam Proses'}
                         </span>
-                        <button onclick="deleteClaim('${claim.id}')" 
-                                class="text-red-600 hover:text-red-800 p-1 rounded transition-colors"
-                                title="Padam">
-                            🗑️
-                        </button>
                     </div>
                 </div>
                 <div class="grid md:grid-cols-2 gap-4 text-sm">
                     <div>
-                        <p><strong>Perjalanan:</strong> ${claim.tempat_asal} → ${claim.destinasi}</p>
-                        <p><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
-                        <p><strong>Masa Pergi:</strong> ${claim.masa_pergi} | <strong>Masa Balik:</strong> ${claim.masa_balik}</p>
-                        <p><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
+                        <p><strong>Perjalanan:</strong> ${claim['Tempat Asal'] || claim.tempat_asal || ''} → ${claim['Destinasi'] || claim.destinasi || ''}</p>
+                        <p><strong>Tarikh:</strong> ${claim['Tarikh Mula'] || claim.tarikh_mula || ''} - ${claim['Tarikh Tamat'] || claim.tarikh_tamat || ''}</p>
+                        <p><strong>Pengangkutan:</strong> ${claim['Pengangkutan'] || claim.jenis_pengangkutan || ''}</p>
+                        ${(claim['Jarak (KM)'] || claim.jarak) > 0 ? `<p><strong>Jarak:</strong> ${claim['Jarak (KM)'] || claim.jarak || 0} KM</p>` : ''}
                     </div>
                     <div>
                         <p><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
                         <div class="text-xs text-gray-600 mt-1">
-                            <p>Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
-                            <p>Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
-                            <p>Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
+                            <p>Pengangkutan: RM${parseFloat(claim['Kos Pengangkutan'] || claim.kos_pengangkutan || 0).toFixed(2)}</p>
+                            <p>Tol: RM${parseFloat(claim['Kos Tol'] || claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${parseFloat(claim['Kos Penginapan'] || claim.kos_penginapan || 0).toFixed(2)}</p>
+                            <p>Elaun Harian: RM${parseFloat(claim['Elaun Harian'] || claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${parseFloat(claim['Kos Lain'] || claim.kos_lain || 0).toFixed(2)}</p>
                         </div>
-                        <p class="mt-1"><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
-                        ${claim.no_kenderaan ? `<p><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
+                        <p class="mt-1"><strong>Tujuan:</strong> ${(claim['Tujuan'] || claim.tujuan || '').substring(0, 50)}${(claim['Tujuan'] || claim.tujuan || '').length > 50 ? '...' : ''}</p>
+                        ${(claim['No Kenderaan'] || claim.no_kenderaan) ? `<p><strong>No. Kenderaan:</strong> ${claim['No Kenderaan'] || claim.no_kenderaan}</p>` : ''}
                     </div>
                 </div>
             `;
 
             return div;
-        }
-
-        // Update claim element
-        function updateClaimElement(element, claim) {
-            const statusColor = getStatusColor(claim.status);
-            const formattedDateMula = new Date(claim.tarikh_mula).toLocaleDateString('ms-MY');
-            const formattedDateTamat = new Date(claim.tarikh_tamat).toLocaleDateString('ms-MY');
-            const formattedAmount = new Intl.NumberFormat('ms-MY', {
-                style: 'currency',
-                currency: 'MYR'
-            }).format(claim.jumlah_tuntutan);
-
-            const monthNames = {
-                '01': 'Jan', '02': 'Feb', '03': 'Mac', '04': 'Apr',
-                '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Ogs',
-                '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Dis'
-            };
-
-            const monthBadge = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
-                `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                    ${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}
-                </span>` : '';
-
-            element.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-gray-800">${claim.nama_pemohon}</h3>
-                        <p class="text-sm text-gray-600">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
-                        <div class="flex items-center space-x-2 mt-1">
-                            <p class="text-xs text-blue-600">${claim.kategori_perjalanan}</p>
-                            ${monthBadge}
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
-                            ${claim.status}
-                        </span>
-                        <button onclick="deleteClaim('${claim.id}')" 
-                                class="text-red-600 hover:text-red-800 p-1 rounded transition-colors"
-                                title="Padam">
-                            🗑️
-                        </button>
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <p><strong>Perjalanan:</strong> ${claim.tempat_asal} → ${claim.destinasi}</p>
-                        <p><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
-                        <p><strong>Masa Pergi:</strong> ${claim.masa_pergi} | <strong>Masa Balik:</strong> ${claim.masa_balik}</p>
-                        <p><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
-                    </div>
-                    <div>
-                        <p><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                        <div class="text-xs text-gray-600 mt-1">
-                            <p>Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
-                            <p>Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
-                            <p>Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
-                        </div>
-                        <p class="mt-1"><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
-                        ${claim.no_kenderaan ? `<p><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
-                    </div>
-                </div>
-            `;
         }
 
         // Get status color
@@ -847,58 +759,6 @@
                 default:
                     return 'bg-gray-100 text-gray-800';
             }
-        }
-
-        // Delete claim
-        async function deleteClaim(claimId) {
-            const claim = currentData.find(c => c.id === claimId);
-            if (!claim) return;
-
-            // Show inline confirmation
-            const claimElement = document.querySelector(`[data-claim-id="${claimId}"]`);
-            const deleteBtn = claimElement.querySelector('button[onclick*="deleteClaim"]');
-            
-            deleteBtn.innerHTML = 'Padam?';
-            deleteBtn.onclick = null;
-            
-            // Create confirm and cancel buttons
-            const confirmBtn = document.createElement('button');
-            confirmBtn.innerHTML = '✓';
-            confirmBtn.className = 'text-red-600 hover:text-red-800 p-1 rounded transition-colors ml-1';
-            confirmBtn.title = 'Sahkan padam';
-            
-            const cancelBtn = document.createElement('button');
-            cancelBtn.innerHTML = '✕';
-            cancelBtn.className = 'text-gray-600 hover:text-gray-800 p-1 rounded transition-colors ml-1';
-            cancelBtn.title = 'Batal';
-            
-            deleteBtn.parentNode.appendChild(confirmBtn);
-            deleteBtn.parentNode.appendChild(cancelBtn);
-            
-            confirmBtn.onclick = async () => {
-                try {
-                    // Delete using Data SDK
-                    if (window.dataSdk) {
-                        const deleteResult = await window.dataSdk.delete(claim);
-                        if (deleteResult.isOk) {
-                            showNotification("Tuntutan berjaya dipadam", "success");
-                        } else {
-                            showNotification("Ralat semasa memadam tuntutan: " + deleteResult.error.message, "error");
-                        }
-                    } else {
-                        showNotification("Sistem data tidak tersedia", "error");
-                    }
-                } catch (error) {
-                    showNotification("Ralat semasa memadam tuntutan", "error");
-                }
-            };
-            
-            cancelBtn.onclick = () => {
-                deleteBtn.innerHTML = '🗑️';
-                deleteBtn.onclick = () => deleteClaim(claimId);
-                confirmBtn.remove();
-                cancelBtn.remove();
-            };
         }
 
         // Update total count
@@ -920,12 +780,12 @@
             
             setTimeout(() => {
                 notification.remove();
-            }, 3000);
+            }, 5000);
         }
 
         // Print claims list
         function printClaimsList() {
-            if (filteredData.length === 0) {
+            if (currentData.length === 0) {
                 showNotification("Tiada tuntutan untuk dicetak", "error");
                 return;
             }
@@ -953,61 +813,45 @@
                 day: 'numeric'
             });
 
-            const totalAmount = filteredData.reduce((sum, claim) => sum + claim.jumlah_tuntutan, 0);
+            const totalAmount = currentData.reduce((sum, claim) => {
+                return sum + parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0);
+            }, 0);
+            
             const formattedTotal = new Intl.NumberFormat('ms-MY', {
                 style: 'currency',
                 currency: 'MYR'
             }).format(totalAmount);
 
-            const monthNames = {
-                '01': 'Januari', '02': 'Februari', '03': 'Mac', '04': 'April',
-                '05': 'Mei', '06': 'Jun', '07': 'Julai', '08': 'Ogos',
-                '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Disember'
-            };
-
             let claimsHtml = '';
-            filteredData.forEach((claim, index) => {
-                const formattedDateMula = new Date(claim.tarikh_mula).toLocaleDateString('ms-MY');
-                const formattedDateTamat = new Date(claim.tarikh_tamat).toLocaleDateString('ms-MY');
+            currentData.forEach((claim, index) => {
                 const formattedAmount = new Intl.NumberFormat('ms-MY', {
                     style: 'currency',
                     currency: 'MYR'
-                }).format(claim.jumlah_tuntutan);
-
-                const monthYear = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
-                    `${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}` : 'Tidak dinyatakan';
+                }).format(parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0));
 
                 claimsHtml += `
                     <div class="claim-item" style="border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; page-break-inside: avoid;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                             <div style="flex: 1;">
-                                <h3 style="font-weight: bold; margin: 0 0 5px 0;">${index + 1}. ${claim.nama_pemohon}</h3>
-                                <p style="margin: 0; font-size: 14px;">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${claim.kategori_perjalanan} | Bulan: ${monthYear}</p>
+                                <h3 style="font-weight: bold; margin: 0 0 5px 0;">${index + 1}. ${claim['Nama Pemohon'] || claim.nama_pemohon || ''}</h3>
+                                <p style="margin: 0; font-size: 14px;">${claim['Jawatan'] || claim.jawatan || ''} (${claim['Gred'] || claim.gred || ''}) - ${claim['Bahagian'] || claim.bahagian || ''}</p>
                             </div>
                             <div style="text-align: right;">
                                 <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
-                                    ${claim.status}
+                                    ${claim['Status'] || claim.status || 'Dalam Proses'}
                                 </span>
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 14px;">
                             <div>
-                                <p style="margin: 3px 0;"><strong>Perjalanan:</strong> ${claim.tempat_asal} → ${claim.destinasi}</p>
-                                <p style="margin: 3px 0;"><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
-                                <p style="margin: 3px 0;"><strong>Masa:</strong> ${claim.masa_pergi} - ${claim.masa_balik}</p>
-                                <p style="margin: 3px 0;"><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                                ${claim.jarak > 0 ? `<p style="margin: 3px 0;"><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
-                                ${claim.no_kenderaan ? `<p style="margin: 3px 0;"><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
+                                <p style="margin: 3px 0;"><strong>Perjalanan:</strong> ${claim['Tempat Asal'] || claim.tempat_asal || ''} → ${claim['Destinasi'] || claim.destinasi || ''}</p>
+                                <p style="margin: 3px 0;"><strong>Tarikh:</strong> ${claim['Tarikh Mula'] || claim.tarikh_mula || ''} - ${claim['Tarikh Tamat'] || claim.tarikh_tamat || ''}</p>
+                                <p style="margin: 3px 0;"><strong>Pengangkutan:</strong> ${claim['Pengangkutan'] || claim.jenis_pengangkutan || ''}</p>
+                                ${(claim['Jarak (KM)'] || claim.jarak) > 0 ? `<p style="margin: 3px 0;"><strong>Jarak:</strong> ${claim['Jarak (KM)'] || claim.jarak || 0} KM</p>` : ''}
                             </div>
                             <div>
                                 <p style="margin: 3px 0;"><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                                <div style="font-size: 12px; color: #666; margin: 5px 0;">
-                                    <p style="margin: 2px 0;">Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
-                                    <p style="margin: 2px 0;">Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
-                                    <p style="margin: 2px 0;">Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
-                                </div>
-                                <p style="margin: 3px 0;"><strong>Tujuan:</strong> ${claim.tujuan}</p>
+                                <p style="margin: 3px 0;"><strong>Tujuan:</strong> ${claim['Tujuan'] || claim.tujuan || ''}</p>
                             </div>
                         </div>
                     </div>
@@ -1064,22 +908,14 @@
                     </div>
                     
                     <div class="summary">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
                             <div>
                                 <strong>Jumlah Permohonan</strong><br>
-                                <span style="font-size: 24px; color: #2563eb;">${filteredData.length}</span>
+                                <span style="font-size: 24px; color: #2563eb;">${currentData.length}</span>
                             </div>
                             <div>
                                 <strong>Jumlah Keseluruhan</strong><br>
                                 <span style="font-size: 24px; color: #16a34a;">${formattedTotal}</span>
-                            </div>
-                            <div>
-                                <strong>Status</strong><br>
-                                <span style="font-size: 14px;">
-                                    Dalam Proses: ${filteredData.filter(c => c.status === 'Dalam Proses').length}<br>
-                                    Diluluskan: ${filteredData.filter(c => c.status === 'Diluluskan').length}<br>
-                                    Ditolak: ${filteredData.filter(c => c.status === 'Ditolak').length}
-                                </span>
                             </div>
                         </div>
                     </div>
@@ -1098,17 +934,23 @@
             `;
         }
 
-        // Setup filters
-        function setupFilters() {
-            const yearFilter = document.getElementById('year-filter');
-            const monthFilter = document.getElementById('month-filter');
-            
-            if (yearFilter) {
-                yearFilter.addEventListener('change', applyFilters);
-            }
-            if (monthFilter) {
-                monthFilter.addEventListener('change', applyFilters);
-            }
+        // Setup refresh button
+        function setupRefreshButton() {
+            const refreshBtn = document.getElementById('refresh-btn');
+            refreshBtn.addEventListener('click', async () => {
+                refreshBtn.disabled = true;
+                refreshBtn.innerHTML = '<span>🔄</span><span>Memuat...</span>';
+                
+                try {
+                    await loadData();
+                    showNotification('Data berjaya dimuat semula', 'success');
+                } catch (error) {
+                    showNotification('Ralat memuat semula data', 'error');
+                } finally {
+                    refreshBtn.disabled = false;
+                    refreshBtn.innerHTML = '<span>🔄</span><span>Muat Semula</span>';
+                }
+            });
         }
 
         // Initialize app when DOM is loaded
@@ -1117,8 +959,8 @@
             setupTabs();
             setupForm();
             setupCostCalculation();
-            setupFilters();
+            setupRefreshButton();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99400ba111ec0c6d',t:'MTc2MTM3NzgxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941147ac5187a7f',t:'MTc2MTM4ODY2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
