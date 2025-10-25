@@ -219,18 +219,21 @@
         };
 
         let currentData = [];
-        let googleScriptUrl = '';
+        let googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwg5BPqgRog3P-dvGnjdQ5aqKlpELKXuJDuJNyxvr_RsnqIQXeDHpIMJCdgzdnUGZUt/exec';
 
         // Element SDK configuration
         async function onConfigChange(config) {
             const title = config.header_title || defaultConfig.header_title;
             const department = config.department_name || defaultConfig.department_name;
             const footer = config.footer_text || defaultConfig.footer_text;
-            googleScriptUrl = config.google_script_url || defaultConfig.google_script_url;
+            const scriptUrl = config.google_script_url || defaultConfig.google_script_url;
 
             document.getElementById('main-title').textContent = title;
             document.getElementById('department-name').textContent = department;
             document.getElementById('footer-text').textContent = footer;
+            
+            // Update Google Script URL
+            googleScriptUrl = scriptUrl;
         }
 
         function mapToCapabilities(config) {
@@ -295,8 +298,6 @@
             ]);
         }
 
-
-
         // Google Sheets API functions
         async function saveToGoogleSheets(data) {
             if (!googleScriptUrl) {
@@ -304,18 +305,25 @@
             }
 
             try {
+                const payload = {
+                    action: 'add',
+                    data: data
+                };
+
                 const response = await fetch(googleScriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(payload)
                 });
 
-                // Note: no-cors mode means we can't read the response
-                // We'll assume success if no error is thrown
-                return { success: true };
+                const result = await response.json();
+                if (result.success) {
+                    return { success: true };
+                } else {
+                    throw new Error(result.error || 'Unknown error');
+                }
             } catch (error) {
                 console.error('Error saving to Google Sheets:', error);
                 throw error;
@@ -328,7 +336,7 @@
             }
 
             try {
-                const response = await fetch(googleScriptUrl + '?action=get', {
+                const response = await fetch(googleScriptUrl, {
                     method: 'GET',
                 });
 
@@ -366,15 +374,25 @@
             }
         }
 
-        // Load data from Google Sheets
+        // Load data from Google Sheets only
         async function loadData() {
             try {
-                const data = await loadFromGoogleSheets();
-                currentData = data;
-                updateClaimsList(currentData);
-                updateTotalCount(currentData.length);
+                if (googleScriptUrl) {
+                    const sheetsData = await loadFromGoogleSheets();
+                    currentData = sheetsData || [];
+                    updateClaimsList(currentData);
+                    updateTotalCount(currentData.length);
+                } else {
+                    currentData = [];
+                    updateClaimsList(currentData);
+                    updateTotalCount(0);
+                    showNotification('Google Apps Script URL belum dikonfigurasi', 'error');
+                }
             } catch (error) {
                 console.error('Error loading data:', error);
+                currentData = [];
+                updateClaimsList(currentData);
+                updateTotalCount(0);
                 showNotification('Ralat memuat data dari Google Sheets', 'error');
             }
         }
@@ -608,11 +626,6 @@
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!googleScriptUrl) {
-                    showNotification("Sila masukkan Google Apps Script URL dalam panel edit sistem terlebih dahulu.", "error");
-                    return;
-                }
-
                 // Show loading state
                 submitBtn.classList.add('loading');
                 submitText.classList.add('hidden');
@@ -661,8 +674,17 @@
                         status: "Dalam Proses"
                     };
 
-                    // Save to Google Sheets
-                    await saveToGoogleSheets(claimData);
+                    // Add metadata
+                    claimData.id = Date.now().toString();
+                    claimData.tarikh_hantar = new Date().toISOString().split('T')[0];
+                    
+                    // Save to Google Sheets only
+                    if (googleScriptUrl) {
+                        await saveToGoogleSheets(claimData);
+                        showNotification("Permohonan tuntutan berjaya disimpan ke Google Sheets!", "success");
+                    } else {
+                        throw new Error('Google Apps Script URL belum dikonfigurasi');
+                    }
                     
                     form.reset();
                     // Reset default values
@@ -673,14 +695,12 @@
                     document.getElementById('tahun_tuntutan').value = "2024";
                     document.getElementById('no_kenderaan').value = "PNP4264";
                     
-                    showNotification("Permohonan tuntutan berjaya dihantar ke Google Sheets!", "success");
-                    
                     // Switch to list tab and reload data
                     document.getElementById('tab-list').click();
                     
                 } catch (error) {
                     console.error('Error submitting form:', error);
-                    showNotification("Ralat semasa menghantar permohonan. Sila pastikan Google Apps Script URL adalah betul.", "error");
+                    showNotification("Ralat semasa menyimpan permohonan.", "error");
                 } finally {
                     // Hide loading state
                     submitBtn.classList.remove('loading');
@@ -975,7 +995,7 @@
                 
                 try {
                     await loadData();
-                    showNotification('Data berjaya dimuat semula', 'success');
+                    showNotification('Data berjaya dimuat semula dari Google Sheets', 'success');
                 } catch (error) {
                     showNotification('Ralat memuat semula data', 'error');
                 } finally {
@@ -994,5 +1014,5 @@
             setupRefreshButton();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941579811816b5d',t:'MTc2MTM5MTQxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941743474a197fa',t:'MTc2MTM5MjU4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
