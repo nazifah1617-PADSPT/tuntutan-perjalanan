@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Tuntutan Perjalanan Dalam Negeri</title>
   <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
         body {
@@ -41,7 +42,6 @@
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
  </head>
  <body class="min-h-full bg-gray-50">
   <div class="container mx-auto px-4 py-6 max-w-6xl"><!-- Header -->
@@ -59,33 +59,41 @@
     <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Borang Permohonan Tuntutan Perjalanan</h2>
     <form id="claim-form" class="space-y-6"><!-- Personal Information -->
      <div class="grid md:grid-cols-2 gap-6">
-      <div><label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Penuh</label> <input type="text" id="nama" name="nama" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div><label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Penuh</label> <input type="text" id="nama" name="nama" required value="AHMAD HAFIZAN BIN ABD HALIM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
-      <div><label for="jawatan" class="block text-sm font-medium text-gray-700 mb-2">Jawatan</label> <input type="text" id="jawatan" name="jawatan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div><label for="jawatan" class="block text-sm font-medium text-gray-700 mb-2">Jawatan</label> <input type="text" id="jawatan" name="jawatan" required value="PEMBANTU HAL EHWAL ISLAM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
      </div>
      <div class="grid md:grid-cols-2 gap-6">
-      <div><label for="gred" class="block text-sm font-medium text-gray-700 mb-2">Gred</label> <select id="gred" name="gred" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Gred</option> <optgroup label="Kumpulan Pengurusan Tertinggi (JUSA)"> <option value="JUSA A" data-elaun="1.20">JUSA A</option> <option value="JUSA B" data-elaun="1.20">JUSA B</option> <option value="JUSA C" data-elaun="1.20">JUSA C</option> </optgroup> <optgroup label="Kumpulan Pengurusan &amp; Profesional"> <option value="54" data-elaun="1.20">Gred 54</option> <option value="52" data-elaun="1.20">Gred 52</option> <option value="48" data-elaun="1.20">Gred 48</option> <option value="44" data-elaun="1.20">Gred 44</option> <option value="41" data-elaun="1.20">Gred 41</option> </optgroup> <optgroup label="Kumpulan Pelaksana"> <option value="40" data-elaun="0.90">Gred 40</option> <option value="38" data-elaun="0.90">Gred 38</option> <option value="36" data-elaun="0.90">Gred 36</option> <option value="34" data-elaun="0.90">Gred 34</option> <option value="32" data-elaun="0.90">Gred 32</option> <option value="29" data-elaun="0.90">Gred 29</option> <option value="27" data-elaun="0.90">Gred 27</option> <option value="26" data-elaun="0.90">Gred 26</option> <option value="22" data-elaun="0.90">Gred 22</option> <option value="19" data-elaun="0.90">Gred 19</option> <option value="17" data-elaun="0.90">Gred 17</option> </optgroup> <optgroup label="Kumpulan Sokongan"> <option value="16" data-elaun="0.70">Gred 16</option> <option value="11" data-elaun="0.70">Gred 11</option> <option value="9" data-elaun="0.70">Gred 9</option> <option value="7" data-elaun="0.70">Gred 7</option> <option value="5" data-elaun="0.70">Gred 5</option> <option value="3" data-elaun="0.70">Gred 3</option> <option value="1" data-elaun="0.70">Gred 1</option> </optgroup> <optgroup label="Skim Perkhidmatan Pendidikan"> <option value="DG54" data-elaun="1.20">DG54 (Ketua Pengarah Pendidikan)</option> <option value="DG52" data-elaun="1.20">DG52 (Timbalan Ketua Pengarah)</option> <option value="DG48" data-elaun="1.20">DG48 (Pengarah Pendidikan)</option> <option value="DG44" data-elaun="1.20">DG44 (Timbalan Pengarah)</option> <option value="DG41" data-elaun="1.20">DG41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Perubatan"> <option value="UD54" data-elaun="1.20">UD54 (Ketua Pengarah Kesihatan)</option> <option value="UD52" data-elaun="1.20">UD52 (Timbalan Ketua Pengarah)</option> <option value="UD48" data-elaun="1.20">UD48 (Pengarah)</option> <option value="UD44" data-elaun="1.20">UD44 (Timbalan Pengarah)</option> <option value="UD41" data-elaun="1.20">UD41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Undang-undang"> <option value="LS54" data-elaun="1.20">LS54 (Peguam Negara)</option> <option value="LS52" data-elaun="1.20">LS52 (Timbalan Peguam Negara)</option> <option value="LS48" data-elaun="1.20">LS48 (Penolong Peguam Negara)</option> <option value="LS44" data-elaun="1.20">LS44 (Peguam Negara Kanan)</option> <option value="LS41" data-elaun="1.20">LS41 (Peguam Negara)</option> </optgroup> <optgroup label="Skim Perkhidmatan Kejuruteraan"> <option value="J54" data-elaun="1.20">J54 (Ketua Jurutera)</option> <option value="J48" data-elaun="1.20">J48 (Jurutera Kanan)</option> <option value="J44" data-elaun="1.20">J44 (Jurutera)</option> <option value="J41" data-elaun="1.20">J41 (Penolong Jurutera)</option> </optgroup> <optgroup label="Skim Perkhidmatan Guru"> <option value="DG48" data-elaun="1.20">DG48 (Guru Cemerlang)</option> <option value="DG44" data-elaun="1.20">DG44 (Guru Kanan)</option> <option value="DG41" data-elaun="1.20">DG41 (Guru)</option> <option value="DG29" data-elaun="0.90">DG29 (Guru Sandaran Tidak Terlatih)</option> </optgroup> <optgroup label="Skim Perkhidmatan Jururawat"> <option value="U44" data-elaun="1.20">U44 (Matron)</option> <option value="U41" data-elaun="1.20">U41 (Jururawat Kanan)</option> <option value="U32" data-elaun="0.90">U32 (Jururawat)</option> <option value="U29" data-elaun="0.90">U29 (Jururawat Muda)</option> </optgroup> </select>
+      <div><label for="gred" class="block text-sm font-medium text-gray-700 mb-2">Gred</label> <select id="gred" name="gred" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Gred</option> <option value="S1" data-elaun="0.85" selected>S1</option> <optgroup label="Kumpulan Pengurusan Tertinggi (JUSA)"> <option value="JUSA A" data-elaun="1.20">JUSA A</option> <option value="JUSA B" data-elaun="1.20">JUSA B</option> <option value="JUSA C" data-elaun="1.20">JUSA C</option> </optgroup> <optgroup label="Kumpulan Pengurusan &amp; Profesional"> <option value="54" data-elaun="1.20">Gred 54</option> <option value="52" data-elaun="1.20">Gred 52</option> <option value="48" data-elaun="1.20">Gred 48</option> <option value="44" data-elaun="1.20">Gred 44</option> <option value="41" data-elaun="1.20">Gred 41</option> </optgroup> <optgroup label="Kumpulan Pelaksana"> <option value="40" data-elaun="0.90">Gred 40</option> <option value="38" data-elaun="0.90">Gred 38</option> <option value="36" data-elaun="0.90">Gred 36</option> <option value="34" data-elaun="0.90">Gred 34</option> <option value="32" data-elaun="0.90">Gred 32</option> <option value="29" data-elaun="0.90">Gred 29</option> <option value="27" data-elaun="0.90">Gred 27</option> <option value="26" data-elaun="0.90">Gred 26</option> <option value="22" data-elaun="0.90">Gred 22</option> <option value="19" data-elaun="0.90">Gred 19</option> <option value="17" data-elaun="0.90">Gred 17</option> </optgroup> <optgroup label="Kumpulan Sokongan"> <option value="16" data-elaun="0.70">Gred 16</option> <option value="11" data-elaun="0.70">Gred 11</option> <option value="9" data-elaun="0.70">Gred 9</option> <option value="7" data-elaun="0.70">Gred 7</option> <option value="5" data-elaun="0.70">Gred 5</option> <option value="3" data-elaun="0.70">Gred 3</option> <option value="1" data-elaun="0.70">Gred 1</option> </optgroup> <optgroup label="Skim Perkhidmatan Pendidikan"> <option value="DG54" data-elaun="1.20">DG54 (Ketua Pengarah Pendidikan)</option> <option value="DG52" data-elaun="1.20">DG52 (Timbalan Ketua Pengarah)</option> <option value="DG48" data-elaun="1.20">DG48 (Pengarah Pendidikan)</option> <option value="DG44" data-elaun="1.20">DG44 (Timbalan Pengarah)</option> <option value="DG41" data-elaun="1.20">DG41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Perubatan"> <option value="UD54" data-elaun="1.20">UD54 (Ketua Pengarah Kesihatan)</option> <option value="UD52" data-elaun="1.20">UD52 (Timbalan Ketua Pengarah)</option> <option value="UD48" data-elaun="1.20">UD48 (Pengarah)</option> <option value="UD44" data-elaun="1.20">UD44 (Timbalan Pengarah)</option> <option value="UD41" data-elaun="1.20">UD41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Undang-undang"> <option value="LS54" data-elaun="1.20">LS54 (Peguam Negara)</option> <option value="LS52" data-elaun="1.20">LS52 (Timbalan Peguam Negara)</option> <option value="LS48" data-elaun="1.20">LS48 (Penolong Peguam Negara)</option> <option value="LS44" data-elaun="1.20">LS44 (Peguam Negara Kanan)</option> <option value="LS41" data-elaun="1.20">LS41 (Peguam Negara)</option> </optgroup> <optgroup label="Skim Perkhidmatan Kejuruteraan"> <option value="J54" data-elaun="1.20">J54 (Ketua Jurutera)</option> <option value="J48" data-elaun="1.20">J48 (Jurutera Kanan)</option> <option value="J44" data-elaun="1.20">J44 (Jurutera)</option> <option value="J41" data-elaun="1.20">J41 (Penolong Jurutera)</option> </optgroup> <optgroup label="Skim Perkhidmatan Guru"> <option value="DG48" data-elaun="1.20">DG48 (Guru Cemerlang)</option> <option value="DG44" data-elaun="1.20">DG44 (Guru Kanan)</option> <option value="DG41" data-elaun="1.20">DG41 (Guru)</option> <option value="DG29" data-elaun="0.90">DG29 (Guru Sandaran Tidak Terlatih)</option> </optgroup> <optgroup label="Skim Perkhidmatan Jururawat"> <option value="U44" data-elaun="1.20">U44 (Matron)</option> <option value="U41" data-elaun="1.20">U41 (Jururawat Kanan)</option> <option value="U32" data-elaun="0.90">U32 (Jururawat)</option> <option value="U29" data-elaun="0.90">U29 (Jururawat Muda)</option> </optgroup> </select>
       </div>
-      <div><label for="bahagian" class="block text-sm font-medium text-gray-700 mb-2">Bahagian/Unit</label> <input type="text" id="bahagian" name="bahagian" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+      <div><label for="bahagian" class="block text-sm font-medium text-gray-700 mb-2">Bahagian/Unit</label> <input type="text" id="bahagian" name="bahagian" required value="PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
       </div>
      </div><!-- Travel Details -->
      <div class="border-t pt-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Butiran Perjalanan</h3><!-- Tarikh dan Masa -->
+      <h3 class="text-lg font-semibold text-gray-800 mb-4">Butiran Perjalanan</h3><!-- Tahun dan Bulan Tuntutan -->
+      <div class="grid md:grid-cols-2 gap-6 mb-4">
+       <div><label for="tahun_tuntutan" class="block text-sm font-medium text-gray-700 mb-2">Tahun Tuntutan</label> <select id="tahun_tuntutan" name="tahun_tuntutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Tahun</option> <option value="2024" selected>2024</option> <option value="2025">2025</option> <option value="2026">2026</option> </select>
+       </div>
+       <div><label for="bulan_tuntutan" class="block text-sm font-medium text-gray-700 mb-2">Bulan Tuntutan</label> <select id="bulan_tuntutan" name="bulan_tuntutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Bulan</option> <option value="01">Januari</option> <option value="02">Februari</option> <option value="03">Mac</option> <option value="04">April</option> <option value="05">Mei</option> <option value="06">Jun</option> <option value="07">Julai</option> <option value="08">Ogos</option> <option value="09">September</option> <option value="10">Oktober</option> <option value="11">November</option> <option value="12">Disember</option> </select>
+       </div>
+      </div><!-- Tarikh dan Masa -->
       <div class="grid md:grid-cols-2 gap-6 mb-4">
        <div><label for="tarikh_mula" class="block text-sm font-medium text-gray-700 mb-2">Tarikh Mula Perjalanan</label> <input type="date" id="tarikh_mula" name="tarikh_mula" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
        <div><label for="tarikh_tamat" class="block text-sm font-medium text-gray-700 mb-2">Tarikh Tamat Perjalanan</label> <input type="date" id="tarikh_tamat" name="tarikh_tamat" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
-      </div><!-- Masa Pergi dan Balik -->
-      <div class="grid md:grid-cols-4 gap-6 mb-4">
+      </div><!-- Masa Perjalanan -->
+      <div class="grid md:grid-cols-5 gap-6 mb-4">
        <div><label for="masa_pergi" class="block text-sm font-medium text-gray-700 mb-2">Masa Pergi</label> <input type="time" id="masa_pergi" name="masa_pergi" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
-       <div><label for="masa_sampai" class="block text-sm font-medium text-gray-700 mb-2">Masa Sampai</label> <input type="time" id="masa_sampai" name="masa_sampai" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="masa_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Tempoh Perjalanan (Jam)</label> <input type="number" id="masa_perjalanan" name="masa_perjalanan" step="0.5" min="0.5" max="24" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       </div>
+       <div><label for="masa_sampai" class="block text-sm font-medium text-gray-700 mb-2">Masa Sampai (Auto)</label> <input type="time" id="masa_sampai" name="masa_sampai" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
        <div><label for="masa_balik" class="block text-sm font-medium text-gray-700 mb-2">Masa Balik</label> <input type="time" id="masa_balik" name="masa_balik" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
-       <div><label for="masa_tiba" class="block text-sm font-medium text-gray-700 mb-2">Masa Tiba Kembali</label> <input type="time" id="masa_tiba" name="masa_tiba" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="masa_tiba" class="block text-sm font-medium text-gray-700 mb-2">Masa Tiba (Auto)</label> <input type="time" id="masa_tiba" name="masa_tiba" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
       </div><!-- Tempat Perjalanan -->
       <div class="grid md:grid-cols-2 gap-6 mb-4">
@@ -94,16 +102,21 @@
        <div><label for="destinasi" class="block text-sm font-medium text-gray-700 mb-2">Destinasi/Tempat Tujuan</label> <input type="text" id="destinasi" name="destinasi" required placeholder="Contoh: Kuala Lumpur" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
       </div><!-- Jarak dan Pengangkutan -->
-      <div class="grid md:grid-cols-3 gap-6 mb-4">
+      <div class="grid md:grid-cols-4 gap-6 mb-4">
        <div><label for="jarak" class="block text-sm font-medium text-gray-700 mb-2">Jarak Perjalanan (KM)</label> <input type="number" id="jarak" name="jarak" step="0.1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       </div>
+       <div><label for="jumlah_jarak_terkumpul" class="block text-sm font-medium text-gray-700 mb-2">Jumlah KM Terkumpul</label> <input type="number" id="jumlah_jarak_terkumpul" name="jumlah_jarak_terkumpul" step="0.1" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p class="text-xs text-gray-500 mt-1">Untuk bulan semasa sahaja</p>
        </div>
        <div><label for="pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Jenis Pengangkutan</label> <select id="pengangkutan" name="pengangkutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Pengangkutan</option> <option value="Kereta Sendiri">Kereta Sendiri</option> <option value="Kereta Jabatan">Kereta Jabatan</option> <option value="Bas Ekspres">Bas Ekspres</option> <option value="Kereta Api/ETS">Kereta Api/ETS</option> <option value="Kapal Terbang">Kapal Terbang</option> <option value="Teksi/E-Hailing">Teksi/E-Hailing</option> <option value="Kapal/Feri">Kapal/Feri</option> </select>
        </div>
        <div><label for="elaun_km" class="block text-sm font-medium text-gray-700 mb-2">Elaun Per KM (RM)</label> <input type="number" id="elaun_km" name="elaun_km" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p class="text-xs text-gray-500 mt-1">500KM pertama: RM0.85<br>
+         501KM+: RM0.75</p>
        </div>
       </div>
       <div class="grid md:grid-cols-2 gap-6 mb-4">
-       <div><label for="no_kenderaan" class="block text-sm font-medium text-gray-700 mb-2">No. Pendaftaran Kenderaan</label> <input type="text" id="no_kenderaan" name="no_kenderaan" placeholder="Contoh: ABC 1234" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="no_kenderaan" class="block text-sm font-medium text-gray-700 mb-2">No. Pendaftaran Kenderaan</label> <input type="text" id="no_kenderaan" name="no_kenderaan" value="PNP4264" placeholder="Contoh: ABC 1234" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
        <div><label for="kos_pengangkutan_auto" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (Auto) (RM)</label> <input type="number" id="kos_pengangkutan_auto" name="kos_pengangkutan_auto" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
@@ -132,8 +145,10 @@
       </div><!-- Kos Perjalanan -->
       <div class="border-t pt-4">
        <h4 class="text-md font-semibold text-gray-800 mb-3">Pecahan Kos Tuntutan</h4>
-       <div class="grid md:grid-cols-2 gap-6">
+       <div class="grid md:grid-cols-3 gap-6">
         <div><label for="kos_pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (RM)</label> <input type="number" id="kos_pengangkutan" name="kos_pengangkutan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div><label for="kos_tol" class="block text-sm font-medium text-gray-700 mb-2">Kos Tol Pergi &amp; Balik (RM)</label> <input type="number" id="kos_tol" name="kos_tol" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div><label for="kos_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Kos Penginapan (RM)</label> <input type="number" id="kos_penginapan" name="kos_penginapan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
@@ -153,7 +168,7 @@
    <section id="list-section" class="hidden bg-white rounded-lg shadow-lg p-6">
     <div class="flex justify-between items-center mb-6 border-b pb-2">
      <h2 class="text-xl font-bold text-gray-800">Senarai Tuntutan</h2>
-     <div class="flex items-center space-x-4"><button id="print-btn" onclick="printClaimsList()" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🖨️</span> <span>Cetak Senarai</span> </button>
+     <div class="flex items-center space-x-4"><select id="year-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"> <option value="">Semua Tahun</option> <option value="2024">2024</option> <option value="2025">2025</option> <option value="2026">2026</option> </select> <select id="month-filter" class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Semua Bulan</option> <option value="01">Januari</option> <option value="02">Februari</option> <option value="03">Mac</option> <option value="04">April</option> <option value="05">Mei</option> <option value="06">Jun</option> <option value="07">Julai</option> <option value="08">Ogos</option> <option value="09">September</option> <option value="10">Oktober</option> <option value="11">November</option> <option value="12">Disember</option> </select> <button id="print-btn" onclick="printClaimsList()" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🖨️</span> <span>Cetak Senarai</span> </button>
       <div class="text-sm text-gray-600">
        Jumlah: <span id="total-count" class="font-semibold">0</span> permohonan
       </div>
@@ -192,42 +207,48 @@
 
         let currentData = [];
         let currentRecordCount = 0;
-        const STORAGE_KEY = 'tuntutan_perjalanan_data';
+        let filteredData = [];
 
-        // localStorage functions
-        function saveToLocalStorage(data) {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                return true;
-            } catch (error) {
-                console.error('Error saving to localStorage:', error);
-                return false;
+        // Data SDK handler
+        const dataHandler = {
+            onDataChanged(data) {
+                currentData = data;
+                currentRecordCount = data.length;
+                applyFilters();
+                
+                // Show/hide limit warning
+                const limitWarning = document.getElementById('limit-warning');
+                if (currentRecordCount >= 999) {
+                    limitWarning.classList.remove('hidden');
+                } else {
+                    limitWarning.classList.add('hidden');
+                }
             }
-        }
+        };
 
-        function loadFromLocalStorage() {
-            try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                return data ? JSON.parse(data) : [];
-            } catch (error) {
-                console.error('Error loading from localStorage:', error);
-                return [];
-            }
-        }
-
-        function updateDataAndUI(data) {
-            currentData = data;
-            currentRecordCount = data.length;
-            updateClaimsList(data);
-            updateTotalCount(data.length);
+        function applyFilters() {
+            const yearFilter = document.getElementById('year-filter');
+            const monthFilter = document.getElementById('month-filter');
+            const selectedYear = yearFilter ? yearFilter.value : '';
+            const selectedMonth = monthFilter ? monthFilter.value : '';
             
-            // Show/hide limit warning
-            const limitWarning = document.getElementById('limit-warning');
-            if (currentRecordCount >= 999) {
-                limitWarning.classList.remove('hidden');
-            } else {
-                limitWarning.classList.add('hidden');
-            }
+            filteredData = currentData.filter(claim => {
+                let matchesYear = true;
+                let matchesMonth = true;
+                
+                if (selectedYear && claim.tahun_tuntutan) {
+                    matchesYear = claim.tahun_tuntutan === selectedYear;
+                }
+                
+                if (selectedMonth && claim.bulan_tuntutan) {
+                    matchesMonth = claim.bulan_tuntutan === selectedMonth;
+                }
+                
+                return matchesYear && matchesMonth;
+            });
+            
+            updateClaimsList(filteredData);
+            updateTotalCount(filteredData.length);
         }
 
         // Element SDK configuration
@@ -315,11 +336,17 @@
                     });
                 }
 
-                // Load data from localStorage
-                const savedData = loadFromLocalStorage();
-                updateDataAndUI(savedData);
+                // Initialize Data SDK
+                if (window.dataSdk) {
+                    const initResult = await window.dataSdk.init(dataHandler);
+                    if (!initResult.isOk) {
+                        console.error("Failed to initialize data SDK:", initResult.error);
+                        showNotification("Ralat memulakan sistem data", "error");
+                    }
+                }
             } catch (error) {
                 console.error("Initialization error:", error);
+                showNotification("Ralat memulakan aplikasi", "error");
             }
         }
 
@@ -353,7 +380,7 @@
 
         // Auto calculate total cost and mileage allowance
         function setupCostCalculation() {
-            const kosInputs = ['kos_pengangkutan', 'kos_penginapan', 'kos_lain', 'elaun_harian', 'kos_pengangkutan_auto'];
+            const kosInputs = ['kos_pengangkutan', 'kos_penginapan', 'kos_lain', 'kos_tol', 'elaun_harian', 'kos_pengangkutan_auto'];
             const jumlahInput = document.getElementById('jumlah_keseluruhan');
             const gradSelect = document.getElementById('gred');
             const jarakInput = document.getElementById('jarak');
@@ -362,6 +389,13 @@
             const bilanganHariInput = document.getElementById('bilangan_hari');
             const kadarElaunHarianSelect = document.getElementById('kadar_elaun_harian');
             const elaunHarianInput = document.getElementById('elaun_harian');
+            
+            // Time calculation elements
+            const masaPergiInput = document.getElementById('masa_pergi');
+            const masaPerjalananInput = document.getElementById('masa_perjalanan');
+            const masaSampaiInput = document.getElementById('masa_sampai');
+            const masaBalikInput = document.getElementById('masa_balik');
+            const masaTibaInput = document.getElementById('masa_tiba');
 
             // Setup event listeners
             kosInputs.forEach(inputId => {
@@ -375,6 +409,19 @@
             jarakInput.addEventListener('input', calculateMileageAllowance);
             bilanganHariInput.addEventListener('input', calculateDailyAllowance);
             kadarElaunHarianSelect.addEventListener('change', calculateDailyAllowance);
+            
+            // Add listeners for year and month changes
+            const tahunTuntutanSelect = document.getElementById('tahun_tuntutan');
+            const bulanTuntutanSelect = document.getElementById('bulan_tuntutan');
+            
+            tahunTuntutanSelect.addEventListener('change', calculateCumulativeMileage);
+            bulanTuntutanSelect.addEventListener('change', calculateCumulativeMileage);
+            
+            // Time calculation listeners
+            masaPergiInput.addEventListener('change', calculateArrivalTime);
+            masaPerjalananInput.addEventListener('input', calculateArrivalTime);
+            masaBalikInput.addEventListener('change', calculateReturnTime);
+            masaPerjalananInput.addEventListener('input', calculateReturnTime);
 
             function updateMileageRate() {
                 const selectedOption = gradSelect.options[gradSelect.selectedIndex];
@@ -390,17 +437,110 @@
                 }
             }
 
-            function calculateMileageAllowance() {
-                const jarak = parseFloat(jarakInput.value) || 0;
-                const elaunPerKm = parseFloat(elaunKmInput.value) || 0;
+            function calculateCumulativeMileage() {
+                const tahun = document.getElementById('tahun_tuntutan').value;
+                const bulan = document.getElementById('bulan_tuntutan').value;
+                const jumlahJarakTerkumpulInput = document.getElementById('jumlah_jarak_terkumpul');
                 
-                if (jarak > 0 && elaunPerKm > 0) {
-                    const totalMileageAllowance = jarak * elaunPerKm;
-                    kosPengangkutanAutoInput.value = totalMileageAllowance.toFixed(2);
-                } else {
-                    kosPengangkutanAutoInput.value = '';
+                if (!tahun || !bulan) {
+                    jumlahJarakTerkumpulInput.value = '';
+                    return;
                 }
+                
+                // Calculate cumulative mileage for current month only
+                let totalCumulativeMileage = 0;
+                
+                // Filter data for the selected year and month only
+                const relevantClaims = currentData.filter(claim => {
+                    return claim.tahun_tuntutan === tahun && claim.bulan_tuntutan === bulan;
+                });
+                
+                // Sum up all mileage for current month
+                relevantClaims.forEach(claim => {
+                    totalCumulativeMileage += parseFloat(claim.jarak) || 0;
+                });
+                
+                // Add current form mileage if any
+                const currentJarak = parseFloat(jarakInput.value) || 0;
+                totalCumulativeMileage += currentJarak;
+                
+                jumlahJarakTerkumpulInput.value = totalCumulativeMileage.toFixed(1);
+                
+                // Recalculate mileage allowance based on cumulative total
+                calculateMileageAllowanceWithCumulative(totalCumulativeMileage, currentJarak);
+            }
+
+            function calculateMileageAllowanceWithCumulative(cumulativeKm, currentJarak) {
+                if (currentJarak <= 0) {
+                    kosPengangkutanAutoInput.value = '';
+                    elaunKmInput.value = '';
+                    calculateTotal();
+                    return;
+                }
+                
+                const previousCumulativeKm = cumulativeKm - currentJarak;
+                let totalMileageAllowance = 0;
+                
+                // Calculate allowance for current trip based on cumulative position
+                if (previousCumulativeKm >= 500) {
+                    // All current mileage is at RM0.75 rate
+                    totalMileageAllowance = currentJarak * 0.75;
+                    elaunKmInput.value = "0.75";
+                } else if (cumulativeKm <= 500) {
+                    // All current mileage is at RM0.85 rate
+                    totalMileageAllowance = currentJarak * 0.85;
+                    elaunKmInput.value = "0.85";
+                } else {
+                    // Mixed rate: part at RM0.85, part at RM0.75
+                    const kmAt085 = 500 - previousCumulativeKm;
+                    const kmAt075 = currentJarak - kmAt085;
+                    totalMileageAllowance = (kmAt085 * 0.85) + (kmAt075 * 0.75);
+                    const avgRate = totalMileageAllowance / currentJarak;
+                    elaunKmInput.value = avgRate.toFixed(3);
+                }
+                
+                kosPengangkutanAutoInput.value = totalMileageAllowance.toFixed(2);
                 calculateTotal();
+            }
+
+            function calculateMileageAllowance() {
+                calculateCumulativeMileage();
+            }
+            
+            function calculateArrivalTime() {
+                const masaPergi = masaPergiInput.value;
+                const tempohJam = parseFloat(masaPerjalananInput.value) || 0;
+                
+                if (masaPergi && tempohJam > 0) {
+                    const [hours, minutes] = masaPergi.split(':').map(Number);
+                    const pergiMinutes = hours * 60 + minutes;
+                    const sampaiMinutes = pergiMinutes + (tempohJam * 60);
+                    
+                    const sampaiHours = Math.floor(sampaiMinutes / 60) % 24;
+                    const sampaiMins = Math.floor(sampaiMinutes % 60);
+                    
+                    masaSampaiInput.value = `${sampaiHours.toString().padStart(2, '0')}:${sampaiMins.toString().padStart(2, '0')}`;
+                } else {
+                    masaSampaiInput.value = '';
+                }
+            }
+            
+            function calculateReturnTime() {
+                const masaBalik = masaBalikInput.value;
+                const tempohJam = parseFloat(masaPerjalananInput.value) || 0;
+                
+                if (masaBalik && tempohJam > 0) {
+                    const [hours, minutes] = masaBalik.split(':').map(Number);
+                    const balikMinutes = hours * 60 + minutes;
+                    const tibaMinutes = balikMinutes + (tempohJam * 60);
+                    
+                    const tibaHours = Math.floor(tibaMinutes / 60) % 24;
+                    const tibaMins = Math.floor(tibaMinutes % 60);
+                    
+                    masaTibaInput.value = `${tibaHours.toString().padStart(2, '0')}:${tibaMins.toString().padStart(2, '0')}`;
+                } else {
+                    masaTibaInput.value = '';
+                }
             }
 
             function calculateDailyAllowance() {
@@ -452,14 +592,20 @@
 
                 try {
                     const formData = new FormData(form);
+                    const tahunTuntutan = formData.get('tahun_tuntutan');
+                    const bulanTuntutan = formData.get('bulan_tuntutan');
+                    
                     const claimData = {
                         id: Date.now().toString(),
                         nama_pemohon: formData.get('nama'),
                         jawatan: formData.get('jawatan'),
                         gred: formData.get('gred'),
                         bahagian: formData.get('bahagian'),
+                        tahun_tuntutan: tahunTuntutan,
+                        bulan_tuntutan: bulanTuntutan,
                         tarikh_mula: formData.get('tarikh_mula'),
                         tarikh_tamat: formData.get('tarikh_tamat'),
+                        masa_perjalanan: parseFloat(formData.get('masa_perjalanan')) || 0,
                         masa_pergi: formData.get('masa_pergi'),
                         masa_sampai: formData.get('masa_sampai'),
                         masa_balik: formData.get('masa_balik'),
@@ -467,30 +613,46 @@
                         tempat_asal: formData.get('tempat_asal'),
                         destinasi: formData.get('destinasi'),
                         jarak: parseFloat(formData.get('jarak')) || 0,
+                        jumlah_jarak_terkumpul: parseFloat(formData.get('jumlah_jarak_terkumpul')) || 0,
                         jenis_pengangkutan: formData.get('pengangkutan'),
                         no_kenderaan: formData.get('no_kenderaan') || '',
                         kategori_perjalanan: formData.get('kategori_perjalanan'),
+                        bilangan_hari: parseInt(formData.get('bilangan_hari')) || 0,
+                        kadar_elaun_harian: parseFloat(formData.get('kadar_elaun_harian')) || 0,
+                        elaun_harian: parseFloat(formData.get('elaun_harian')) || 0,
                         tujuan: formData.get('tujuan'),
                         kos_pengangkutan: parseFloat(formData.get('kos_pengangkutan')) || 0,
+                        kos_tol: parseFloat(formData.get('kos_tol')) || 0,
                         kos_penginapan: parseFloat(formData.get('kos_penginapan')) || 0,
                         kos_lain: parseFloat(formData.get('kos_lain')) || 0,
-                        elaun_harian: parseFloat(formData.get('elaun_harian')) || 0,
                         jumlah_tuntutan: parseFloat(formData.get('jumlah_keseluruhan')),
                         status: "Dalam Proses",
-                        tarikh_mohon: new Date().toISOString()
+                        tarikh_mohon: new Date().toISOString(),
+                        bulan: `${tahunTuntutan}-${bulanTuntutan}`
                     };
 
-                    // Save to localStorage
-                    const updatedData = [...currentData, claimData];
-                    if (saveToLocalStorage(updatedData)) {
-                        updateDataAndUI(updatedData);
-                        form.reset();
-                        showNotification("Permohonan tuntutan berjaya dihantar!", "success");
-                        
-                        // Switch to list tab
-                        document.getElementById('tab-list').click();
+                    // Save using Data SDK
+                    if (window.dataSdk) {
+                        const createResult = await window.dataSdk.create(claimData);
+                        if (createResult.isOk) {
+                            form.reset();
+                            // Reset default values
+                            document.getElementById('nama').value = "AHMAD HAFIZAN BIN ABD HALIM";
+                            document.getElementById('jawatan').value = "PEMBANTU HAL EHWAL ISLAM";
+                            document.getElementById('gred').value = "S1";
+                            document.getElementById('bahagian').value = "PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH";
+                            document.getElementById('tahun_tuntutan').value = "2024";
+                            document.getElementById('no_kenderaan').value = "PNP4264";
+                            
+                            showNotification("Permohonan tuntutan berjaya dihantar!", "success");
+                            
+                            // Switch to list tab
+                            document.getElementById('tab-list').click();
+                        } else {
+                            showNotification("Ralat semasa menyimpan permohonan: " + createResult.error.message, "error");
+                        }
                     } else {
-                        showNotification("Ralat semasa menyimpan permohonan. Sila cuba lagi.", "error");
+                        showNotification("Sistem data tidak tersedia", "error");
                     }
                 } catch (error) {
                     showNotification("Ralat semasa menghantar permohonan. Sila cuba lagi.", "error");
@@ -553,12 +715,26 @@
                 currency: 'MYR'
             }).format(claim.jumlah_tuntutan);
 
+            const monthNames = {
+                '01': 'Jan', '02': 'Feb', '03': 'Mac', '04': 'Apr',
+                '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Ogs',
+                '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Dis'
+            };
+
+            const monthBadge = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
+                `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                    ${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}
+                </span>` : '';
+
             div.innerHTML = `
                 <div class="flex justify-between items-start mb-3">
                     <div class="flex-1">
                         <h3 class="font-semibold text-gray-800">${claim.nama_pemohon}</h3>
                         <p class="text-sm text-gray-600">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
-                        <p class="text-xs text-blue-600 mt-1">${claim.kategori_perjalanan}</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <p class="text-xs text-blue-600">${claim.kategori_perjalanan}</p>
+                            ${monthBadge}
+                        </div>
                     </div>
                     <div class="flex items-center space-x-2">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
@@ -577,11 +753,16 @@
                         <p><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
                         <p><strong>Masa Pergi:</strong> ${claim.masa_pergi} | <strong>Masa Balik:</strong> ${claim.masa_balik}</p>
                         <p><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM</p>` : ''}
+                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
                     </div>
                     <div>
                         <p><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                        <p><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
+                        <div class="text-xs text-gray-600 mt-1">
+                            <p>Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
+                            <p>Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
+                            <p>Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
+                        </div>
+                        <p class="mt-1"><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
                         ${claim.no_kenderaan ? `<p><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
                     </div>
                 </div>
@@ -600,12 +781,26 @@
                 currency: 'MYR'
             }).format(claim.jumlah_tuntutan);
 
+            const monthNames = {
+                '01': 'Jan', '02': 'Feb', '03': 'Mac', '04': 'Apr',
+                '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Ogs',
+                '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Dis'
+            };
+
+            const monthBadge = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
+                `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
+                    ${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}
+                </span>` : '';
+
             element.innerHTML = `
                 <div class="flex justify-between items-start mb-3">
                     <div class="flex-1">
                         <h3 class="font-semibold text-gray-800">${claim.nama_pemohon}</h3>
                         <p class="text-sm text-gray-600">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
-                        <p class="text-xs text-blue-600 mt-1">${claim.kategori_perjalanan}</p>
+                        <div class="flex items-center space-x-2 mt-1">
+                            <p class="text-xs text-blue-600">${claim.kategori_perjalanan}</p>
+                            ${monthBadge}
+                        </div>
                     </div>
                     <div class="flex items-center space-x-2">
                         <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
@@ -624,11 +819,16 @@
                         <p><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
                         <p><strong>Masa Pergi:</strong> ${claim.masa_pergi} | <strong>Masa Balik:</strong> ${claim.masa_balik}</p>
                         <p><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM</p>` : ''}
+                        ${claim.jarak > 0 ? `<p><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
                     </div>
                     <div>
                         <p><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                        <p><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
+                        <div class="text-xs text-gray-600 mt-1">
+                            <p>Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
+                            <p>Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
+                            <p>Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
+                        </div>
+                        <p class="mt-1"><strong>Tujuan:</strong> ${claim.tujuan.substring(0, 50)}${claim.tujuan.length > 50 ? '...' : ''}</p>
                         ${claim.no_kenderaan ? `<p><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
                     </div>
                 </div>
@@ -677,13 +877,16 @@
             
             confirmBtn.onclick = async () => {
                 try {
-                    // Remove from localStorage
-                    const updatedData = currentData.filter(c => c.id !== claimId);
-                    if (saveToLocalStorage(updatedData)) {
-                        updateDataAndUI(updatedData);
-                        showNotification("Tuntutan berjaya dipadam", "success");
+                    // Delete using Data SDK
+                    if (window.dataSdk) {
+                        const deleteResult = await window.dataSdk.delete(claim);
+                        if (deleteResult.isOk) {
+                            showNotification("Tuntutan berjaya dipadam", "success");
+                        } else {
+                            showNotification("Ralat semasa memadam tuntutan: " + deleteResult.error.message, "error");
+                        }
                     } else {
-                        showNotification("Ralat semasa memadam tuntutan", "error");
+                        showNotification("Sistem data tidak tersedia", "error");
                     }
                 } catch (error) {
                     showNotification("Ralat semasa memadam tuntutan", "error");
@@ -722,7 +925,7 @@
 
         // Print claims list
         function printClaimsList() {
-            if (currentData.length === 0) {
+            if (filteredData.length === 0) {
                 showNotification("Tiada tuntutan untuk dicetak", "error");
                 return;
             }
@@ -750,14 +953,20 @@
                 day: 'numeric'
             });
 
-            const totalAmount = currentData.reduce((sum, claim) => sum + claim.jumlah_tuntutan, 0);
+            const totalAmount = filteredData.reduce((sum, claim) => sum + claim.jumlah_tuntutan, 0);
             const formattedTotal = new Intl.NumberFormat('ms-MY', {
                 style: 'currency',
                 currency: 'MYR'
             }).format(totalAmount);
 
+            const monthNames = {
+                '01': 'Januari', '02': 'Februari', '03': 'Mac', '04': 'April',
+                '05': 'Mei', '06': 'Jun', '07': 'Julai', '08': 'Ogos',
+                '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Disember'
+            };
+
             let claimsHtml = '';
-            currentData.forEach((claim, index) => {
+            filteredData.forEach((claim, index) => {
                 const formattedDateMula = new Date(claim.tarikh_mula).toLocaleDateString('ms-MY');
                 const formattedDateTamat = new Date(claim.tarikh_tamat).toLocaleDateString('ms-MY');
                 const formattedAmount = new Intl.NumberFormat('ms-MY', {
@@ -765,13 +974,16 @@
                     currency: 'MYR'
                 }).format(claim.jumlah_tuntutan);
 
+                const monthYear = claim.tahun_tuntutan && claim.bulan_tuntutan ? 
+                    `${monthNames[claim.bulan_tuntutan]} ${claim.tahun_tuntutan}` : 'Tidak dinyatakan';
+
                 claimsHtml += `
                     <div class="claim-item" style="border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; page-break-inside: avoid;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
                             <div style="flex: 1;">
                                 <h3 style="font-weight: bold; margin: 0 0 5px 0;">${index + 1}. ${claim.nama_pemohon}</h3>
                                 <p style="margin: 0; font-size: 14px;">${claim.jawatan} (${claim.gred}) - ${claim.bahagian}</p>
-                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${claim.kategori_perjalanan}</p>
+                                <p style="margin: 5px 0 0 0; font-size: 12px; color: #666;">${claim.kategori_perjalanan} | Bulan: ${monthYear}</p>
                             </div>
                             <div style="text-align: right;">
                                 <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
@@ -785,11 +997,16 @@
                                 <p style="margin: 3px 0;"><strong>Tarikh:</strong> ${formattedDateMula} - ${formattedDateTamat}</p>
                                 <p style="margin: 3px 0;"><strong>Masa:</strong> ${claim.masa_pergi} - ${claim.masa_balik}</p>
                                 <p style="margin: 3px 0;"><strong>Pengangkutan:</strong> ${claim.jenis_pengangkutan}</p>
-                                ${claim.jarak > 0 ? `<p style="margin: 3px 0;"><strong>Jarak:</strong> ${claim.jarak} KM</p>` : ''}
+                                ${claim.jarak > 0 ? `<p style="margin: 3px 0;"><strong>Jarak:</strong> ${claim.jarak} KM | <strong>Terkumpul:</strong> ${claim.jumlah_jarak_terkumpul} KM</p>` : ''}
                                 ${claim.no_kenderaan ? `<p style="margin: 3px 0;"><strong>No. Kenderaan:</strong> ${claim.no_kenderaan}</p>` : ''}
                             </div>
                             <div>
                                 <p style="margin: 3px 0;"><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
+                                <div style="font-size: 12px; color: #666; margin: 5px 0;">
+                                    <p style="margin: 2px 0;">Pengangkutan: RM${(claim.kos_pengangkutan || 0).toFixed(2)}</p>
+                                    <p style="margin: 2px 0;">Tol: RM${(claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${(claim.kos_penginapan || 0).toFixed(2)}</p>
+                                    <p style="margin: 2px 0;">Elaun Harian: RM${(claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${(claim.kos_lain || 0).toFixed(2)}</p>
+                                </div>
                                 <p style="margin: 3px 0;"><strong>Tujuan:</strong> ${claim.tujuan}</p>
                             </div>
                         </div>
@@ -850,7 +1067,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; text-align: center;">
                             <div>
                                 <strong>Jumlah Permohonan</strong><br>
-                                <span style="font-size: 24px; color: #2563eb;">${currentData.length}</span>
+                                <span style="font-size: 24px; color: #2563eb;">${filteredData.length}</span>
                             </div>
                             <div>
                                 <strong>Jumlah Keseluruhan</strong><br>
@@ -859,9 +1076,9 @@
                             <div>
                                 <strong>Status</strong><br>
                                 <span style="font-size: 14px;">
-                                    Dalam Proses: ${currentData.filter(c => c.status === 'Dalam Proses').length}<br>
-                                    Diluluskan: ${currentData.filter(c => c.status === 'Diluluskan').length}<br>
-                                    Ditolak: ${currentData.filter(c => c.status === 'Ditolak').length}
+                                    Dalam Proses: ${filteredData.filter(c => c.status === 'Dalam Proses').length}<br>
+                                    Diluluskan: ${filteredData.filter(c => c.status === 'Diluluskan').length}<br>
+                                    Ditolak: ${filteredData.filter(c => c.status === 'Ditolak').length}
                                 </span>
                             </div>
                         </div>
@@ -881,13 +1098,27 @@
             `;
         }
 
+        // Setup filters
+        function setupFilters() {
+            const yearFilter = document.getElementById('year-filter');
+            const monthFilter = document.getElementById('month-filter');
+            
+            if (yearFilter) {
+                yearFilter.addEventListener('change', applyFilters);
+            }
+            if (monthFilter) {
+                monthFilter.addEventListener('change', applyFilters);
+            }
+        }
+
         // Initialize app when DOM is loaded
         document.addEventListener('DOMContentLoaded', () => {
             initializeApp();
             setupTabs();
             setupForm();
             setupCostCalculation();
+            setupFilters();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'993fc6ed309c473c',t:'MTc2MTM3NDk5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99400ba111ec0c6d',t:'MTc2MTM3NzgxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
