@@ -49,20 +49,9 @@
     <div class="text-center">
      <h1 id="main-title" class="text-2xl font-bold mb-2">Sistem Tuntutan Perjalanan Dalam Negeri</h1>
      <p id="department-name" class="text-blue-200">Kerajaan Malaysia</p>
+     <p class="text-blue-300 text-sm mt-2">Mengikut Pekeliling Perkhidmatan Bil. 1 Tahun 2025</p>
     </div>
-   </header><!-- Google Sheets Setup Notice -->
-   <div id="setup-notice" class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-    <div class="flex items-start">
-     <div class="text-yellow-600 mr-3 text-xl">
-      ⚙️
-     </div>
-     <div>
-      <h3 class="font-semibold text-yellow-800 mb-2">Setup Google Sheets Diperlukan</h3>
-      <p class="text-yellow-700 text-sm mb-2">Untuk menyimpan data ke Google Sheets, sila masukkan Google Apps Script URL dalam panel edit sistem.</p>
-      <p class="text-yellow-600 text-xs">Status: <span id="connection-status" class="font-medium">Belum dikonfigurasi</span></p>
-     </div>
-    </div>
-   </div><!-- Navigation Tabs -->
+   </header><!-- Navigation Tabs -->
    <nav class="mb-6">
     <div class="flex space-x-1 bg-white rounded-lg p-1 shadow"><button id="tab-form" class="flex-1 py-2 px-4 rounded-md bg-blue-600 text-white font-medium transition-colors"> Borang Tuntutan </button> <button id="tab-list" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 font-medium transition-colors"> Senarai Tuntutan </button>
     </div>
@@ -128,7 +117,7 @@
        </div>
        <div><label for="pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Jenis Pengangkutan</label> <select id="pengangkutan" name="pengangkutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Pengangkutan</option> <option value="Kereta Sendiri">Kereta Sendiri</option> <option value="Kereta Jabatan">Kereta Jabatan</option> <option value="Bas Ekspres">Bas Ekspres</option> <option value="Kereta Api/ETS">Kereta Api/ETS</option> <option value="Kapal Terbang">Kapal Terbang</option> <option value="Teksi/E-Hailing">Teksi/E-Hailing</option> <option value="Kapal/Feri">Kapal/Feri</option> </select>
        </div>
-       <div><label for="elaun_km" class="block text-sm font-medium text-gray-700 mb-2">Elaun Per KM (RM)</label> <input type="number" id="elaun_km" name="elaun_km" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="elaun_km" class="block text-sm font-medium text-gray-700 mb-2">Elaun Per KM (RM) - Kadar 2025</label> <input type="number" id="elaun_km" name="elaun_km" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <p class="text-xs text-gray-500 mt-1">500KM pertama: RM0.85<br>
          501KM+: RM0.75</p>
        </div>
@@ -139,36 +128,48 @@
        <div><label for="kos_pengangkutan_auto" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (Auto) (RM)</label> <input type="number" id="kos_pengangkutan_auto" name="kos_pengangkutan_auto" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
       </div><!-- Tujuan dan Kategori -->
-      <div class="grid md:grid-cols-2 gap-6 mb-4">
+      <div class="grid md:grid-cols-3 gap-6 mb-4">
        <div><label for="kategori_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Kategori Perjalanan</label> <select id="kategori_perjalanan" name="kategori_perjalanan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kategori</option> <option value="Tugas Rasmi">Tugas Rasmi</option> <option value="Kursus/Latihan">Kursus/Latihan</option> <option value="Mesyuarat">Mesyuarat</option> <option value="Seminar/Persidangan">Seminar/Persidangan</option> <option value="Lawatan Kerja">Lawatan Kerja</option> <option value="Audit/Pemeriksaan">Audit/Pemeriksaan</option> <option value="Lain-lain">Lain-lain</option> </select>
        </div>
        <div><label for="bilangan_hari" class="block text-sm font-medium text-gray-700 mb-2">Bilangan Hari</label> <input type="number" id="bilangan_hari" name="bilangan_hari" min="1" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
+       <div><label for="no_kebenaran" class="block text-sm font-medium text-gray-700 mb-2">No. Kebenaran Perjalanan</label> <input type="text" id="no_kebenaran" name="no_kebenaran" placeholder="Contoh: KP/2025/001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       </div>
       </div><!-- Elaun Harian -->
       <div class="grid md:grid-cols-3 gap-6 mb-4">
-       <div><label for="kadar_elaun_harian" class="block text-sm font-medium text-gray-700 mb-2">Kadar Elaun Harian (RM)</label> <select id="kadar_elaun_harian" name="kadar_elaun_harian" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kadar</option> <option value="150">RM 150 (JUSA/Gred 54-41)</option> <option value="120">RM 120 (Gred 40-32)</option> <option value="100">RM 100 (Gred 29-17)</option> <option value="80">RM 80 (Gred 16 ke bawah)</option> </select>
+       <div><label for="kadar_elaun_harian" class="block text-sm font-medium text-gray-700 mb-2">Kadar Elaun Harian (RM) - Kadar 2025</label> <select id="kadar_elaun_harian" name="kadar_elaun_harian" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kadar</option> <option value="180">RM 180 (JUSA/Gred 54-48)</option> <option value="160">RM 160 (Gred 44-41)</option> <option value="140">RM 140 (Gred 40-32)</option> <option value="120">RM 120 (Gred 29-22)</option> <option value="100">RM 100 (Gred 19-11)</option> <option value="90">RM 90 (Gred 9 ke bawah)</option> </select>
        </div>
        <div><label for="elaun_harian" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Elaun Harian (RM)</label> <input type="number" id="elaun_harian" name="elaun_harian" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
        </div>
-       <div><label class="block text-sm font-medium text-gray-700 mb-2">Panduan Kadar</label>
+       <div><label class="block text-sm font-medium text-gray-700 mb-2">Panduan Kadar 2025</label>
         <div class="text-xs text-gray-600 p-2 bg-blue-50 rounded">
-         <p><strong>RM 150:</strong> JUSA, Gred 54-41</p>
-         <p><strong>RM 120:</strong> Gred 40-32</p>
-         <p><strong>RM 100:</strong> Gred 29-17</p>
-         <p><strong>RM 80:</strong> Gred 16 ke bawah</p>
+         <p><strong>RM 180:</strong> JUSA, Gred 54-48</p>
+         <p><strong>RM 160:</strong> Gred 44-41</p>
+         <p><strong>RM 140:</strong> Gred 40-32</p>
+         <p><strong>RM 120:</strong> Gred 29-22</p>
+         <p><strong>RM 100:</strong> Gred 19-11</p>
+         <p><strong>RM 90:</strong> Gred 9 ke bawah</p>
         </div>
        </div>
       </div><!-- Tujuan Perjalanan -->
       <div class="mb-4"><label for="tujuan" class="block text-sm font-medium text-gray-700 mb-2">Tujuan Perjalanan (Terperinci)</label> <textarea id="tujuan" name="tujuan" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nyatakan tujuan perjalanan secara terperinci termasuk aktiviti yang akan dijalankan"></textarea>
       </div><!-- Kos Perjalanan -->
       <div class="border-t pt-4">
-       <h4 class="text-md font-semibold text-gray-800 mb-3">Pecahan Kos Tuntutan</h4>
+       <h4 class="text-md font-semibold text-gray-800 mb-3">Pecahan Kos Tuntutan (Kadar 2025)</h4>
        <div class="grid md:grid-cols-3 gap-6">
         <div><label for="kos_pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (RM)</label> <input type="number" id="kos_pengangkutan" name="kos_pengangkutan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div><label for="kos_tol" class="block text-sm font-medium text-gray-700 mb-2">Kos Tol Pergi &amp; Balik (RM)</label> <input type="number" id="kos_tol" name="kos_tol" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
         <div><label for="kos_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Kos Penginapan (RM)</label> <input type="number" id="kos_penginapan" name="kos_penginapan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+       </div><!-- Elaun Penginapan Mengikut Kadar 2025 -->
+       <div class="grid md:grid-cols-3 gap-6 mt-4">
+        <div><label for="kadar_elaun_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Kadar Elaun Penginapan (RM/malam)</label> <select id="kadar_elaun_penginapan" name="kadar_elaun_penginapan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kadar</option> <option value="300">RM 300 (JUSA/Gred 54-48)</option> <option value="250">RM 250 (Gred 44-41)</option> <option value="200">RM 200 (Gred 40-32)</option> <option value="150">RM 150 (Gred 29-22)</option> <option value="120">RM 120 (Gred 19-11)</option> <option value="100">RM 100 (Gred 9 ke bawah)</option> </select>
+        </div>
+        <div><label for="bilangan_malam" class="block text-sm font-medium text-gray-700 mb-2">Bilangan Malam</label> <input type="number" id="bilangan_malam" name="bilangan_malam" min="0" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div><label for="elaun_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Elaun Penginapan (RM)</label> <input type="number" id="elaun_penginapan" name="elaun_penginapan" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
        </div>
        <div class="grid md:grid-cols-2 gap-6 mt-4">
@@ -228,9 +229,6 @@
             document.getElementById('main-title').textContent = title;
             document.getElementById('department-name').textContent = department;
             document.getElementById('footer-text').textContent = footer;
-
-            // Update connection status
-            updateConnectionStatus();
         }
 
         function mapToCapabilities(config) {
@@ -295,21 +293,7 @@
             ]);
         }
 
-        // Update connection status
-        function updateConnectionStatus() {
-            const statusElement = document.getElementById('connection-status');
-            const setupNotice = document.getElementById('setup-notice');
-            
-            if (googleScriptUrl && googleScriptUrl.includes('script.google.com')) {
-                statusElement.textContent = 'Disambungkan ke Google Sheets';
-                statusElement.className = 'font-medium text-green-600';
-                setupNotice.classList.add('hidden');
-            } else {
-                statusElement.textContent = 'Belum dikonfigurasi';
-                statusElement.className = 'font-medium text-yellow-600';
-                setupNotice.classList.remove('hidden');
-            }
-        }
+
 
         // Google Sheets API functions
         async function saveToGoogleSheets(data) {
@@ -426,7 +410,7 @@
 
         // Auto calculate total cost and mileage allowance
         function setupCostCalculation() {
-            const kosInputs = ['kos_pengangkutan', 'kos_penginapan', 'kos_lain', 'kos_tol', 'elaun_harian', 'kos_pengangkutan_auto'];
+            const kosInputs = ['kos_pengangkutan', 'kos_penginapan', 'kos_lain', 'kos_tol', 'elaun_harian', 'kos_pengangkutan_auto', 'elaun_penginapan'];
             const jumlahInput = document.getElementById('jumlah_keseluruhan');
             const gradSelect = document.getElementById('gred');
             const jarakInput = document.getElementById('jarak');
@@ -435,6 +419,9 @@
             const bilanganHariInput = document.getElementById('bilangan_hari');
             const kadarElaunHarianSelect = document.getElementById('kadar_elaun_harian');
             const elaunHarianInput = document.getElementById('elaun_harian');
+            const kadarElaunPenginapanSelect = document.getElementById('kadar_elaun_penginapan');
+            const bilanganMalamInput = document.getElementById('bilangan_malam');
+            const elaunPenginapanInput = document.getElementById('elaun_penginapan');
             
             // Time calculation elements
             const masaPergiInput = document.getElementById('masa_pergi');
@@ -457,6 +444,8 @@
             jarakInput.addEventListener('input', calculateMileageAllowance);
             bilanganHariInput.addEventListener('input', calculateDailyAllowance);
             kadarElaunHarianSelect.addEventListener('change', calculateDailyAllowance);
+            bilanganMalamInput.addEventListener('input', calculateAccommodationAllowance);
+            kadarElaunPenginapanSelect.addEventListener('change', calculateAccommodationAllowance);
             
             // Time calculation listeners
             masaPergiInput.addEventListener('change', calculateArrivalTime);
@@ -485,6 +474,7 @@
                 if (jarak > 0 && elaunRate > 0) {
                     let totalAllowance = 0;
                     
+                    // Kadar 2025: 500KM pertama RM0.85, 501KM+ RM0.75
                     if (jarak <= 500) {
                         totalAllowance = jarak * 0.85;
                     } else {
@@ -559,6 +549,19 @@
                 calculateTotal();
             }
 
+            function calculateAccommodationAllowance() {
+                const bilanganMalam = parseInt(bilanganMalamInput.value) || 0;
+                const kadarPenginapan = parseFloat(kadarElaunPenginapanSelect.value) || 0;
+                
+                if (bilanganMalam > 0 && kadarPenginapan > 0) {
+                    const totalAccommodationAllowance = bilanganMalam * kadarPenginapan;
+                    elaunPenginapanInput.value = totalAccommodationAllowance.toFixed(2);
+                } else {
+                    elaunPenginapanInput.value = '';
+                }
+                calculateTotal();
+            }
+
             function calculateTotal() {
                 let total = 0;
                 kosInputs.forEach(inputId => {
@@ -617,10 +620,14 @@
                         jumlah_jarak_terkumpul: parseFloat(formData.get('jumlah_jarak_terkumpul')) || 0,
                         jenis_pengangkutan: formData.get('pengangkutan'),
                         no_kenderaan: formData.get('no_kenderaan') || '',
+                        no_kebenaran: formData.get('no_kebenaran') || '',
                         kategori_perjalanan: formData.get('kategori_perjalanan'),
                         bilangan_hari: parseInt(formData.get('bilangan_hari')) || 0,
                         kadar_elaun_harian: parseFloat(formData.get('kadar_elaun_harian')) || 0,
                         elaun_harian: parseFloat(formData.get('elaun_harian')) || 0,
+                        bilangan_malam: parseInt(formData.get('bilangan_malam')) || 0,
+                        kadar_elaun_penginapan: parseFloat(formData.get('kadar_elaun_penginapan')) || 0,
+                        elaun_penginapan: parseFloat(formData.get('elaun_penginapan')) || 0,
                         tujuan: formData.get('tujuan'),
                         kos_pengangkutan: parseFloat(formData.get('kos_pengangkutan')) || 0,
                         kos_tol: parseFloat(formData.get('kos_tol')) || 0,
@@ -736,7 +743,8 @@
                         <div class="text-xs text-gray-600 mt-1">
                             <p>Pengangkutan: RM${parseFloat(claim['Kos Pengangkutan'] || claim.kos_pengangkutan || 0).toFixed(2)}</p>
                             <p>Tol: RM${parseFloat(claim['Kos Tol'] || claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${parseFloat(claim['Kos Penginapan'] || claim.kos_penginapan || 0).toFixed(2)}</p>
-                            <p>Elaun Harian: RM${parseFloat(claim['Elaun Harian'] || claim.elaun_harian || 0).toFixed(2)} | Lain-lain: RM${parseFloat(claim['Kos Lain'] || claim.kos_lain || 0).toFixed(2)}</p>
+                            <p>Elaun Harian: RM${parseFloat(claim['Elaun Harian'] || claim.elaun_harian || 0).toFixed(2)} | Elaun Penginapan: RM${parseFloat(claim['Elaun Penginapan'] || claim.elaun_penginapan || 0).toFixed(2)}</p>
+                            <p>Lain-lain: RM${parseFloat(claim['Kos Lain'] || claim.kos_lain || 0).toFixed(2)} | No. Kebenaran: ${claim['No Kebenaran'] || claim.no_kebenaran || 'Tiada'}</p>
                         </div>
                         <p class="mt-1"><strong>Tujuan:</strong> ${(claim['Tujuan'] || claim.tujuan || '').substring(0, 50)}${(claim['Tujuan'] || claim.tujuan || '').length > 50 ? '...' : ''}</p>
                         ${(claim['No Kenderaan'] || claim.no_kenderaan) ? `<p><strong>No. Kenderaan:</strong> ${claim['No Kenderaan'] || claim.no_kenderaan}</p>` : ''}
@@ -962,5 +970,5 @@
             setupRefreshButton();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941147ac5187a7f',t:'MTc2MTM4ODY2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99412a3ef4068b74',t:'MTc2MTM4OTU1Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
