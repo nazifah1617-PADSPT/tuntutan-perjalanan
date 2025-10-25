@@ -110,7 +110,8 @@
        </div>
       </div><!-- Jarak dan Pengangkutan -->
       <div class="grid md:grid-cols-4 gap-6 mb-4">
-       <div><label for="jarak" class="block text-sm font-medium text-gray-700 mb-2">Jarak Perjalanan (KM)</label> <input type="number" id="jarak" name="jarak" step="0.1" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+       <div><label for="jarak" class="block text-sm font-medium text-gray-700 mb-2">Jarak Perjalanan Sehala (KM)</label> <input type="number" id="jarak" name="jarak" step="0.1" min="0" placeholder="Contoh: 50 (akan dikira 100km pergi balik)" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <p class="text-xs text-gray-500 mt-1">Sistem akan kira 2 hala (pergi &amp; balik)</p>
        </div>
        <div><label for="jumlah_jarak_terkumpul" class="block text-sm font-medium text-gray-700 mb-2">Jumlah KM Terkumpul</label> <input type="number" id="jumlah_jarak_terkumpul" name="jumlah_jarak_terkumpul" step="0.1" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <p class="text-xs text-gray-500 mt-1">Untuk bulan semasa sahaja</p>
@@ -119,7 +120,8 @@
        </div>
        <div><label for="elaun_km" class="block text-sm font-medium text-gray-700 mb-2">Elaun Per KM (RM) - Kadar 2025</label> <input type="number" id="elaun_km" name="elaun_km" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
         <p class="text-xs text-gray-500 mt-1">500KM pertama: RM0.85<br>
-         501KM+: RM0.75</p>
+         501KM+: RM0.75<br>
+         (Dikira 2 hala)</p>
        </div>
       </div>
       <div class="grid md:grid-cols-2 gap-6 mb-4">
@@ -469,21 +471,31 @@
 
             function calculateMileageAllowance() {
                 const jarak = parseFloat(jarakInput.value) || 0;
-                const elaunRate = parseFloat(elaunKmInput.value) || 0;
                 
-                if (jarak > 0 && elaunRate > 0) {
+                if (jarak > 0) {
+                    // Jarak pergi dan balik (2 hala)
+                    const totalJarak = jarak * 2;
                     let totalAllowance = 0;
                     
                     // Kadar 2025: 500KM pertama RM0.85, 501KM+ RM0.75
-                    if (jarak <= 500) {
-                        totalAllowance = jarak * 0.85;
+                    if (totalJarak <= 500) {
+                        totalAllowance = totalJarak * 0.85;
                     } else {
-                        totalAllowance = (500 * 0.85) + ((jarak - 500) * 0.75);
+                        totalAllowance = (500 * 0.85) + ((totalJarak - 500) * 0.75);
                     }
                     
                     kosPengangkutanAutoInput.value = totalAllowance.toFixed(2);
+                    
+                    // Update jumlah jarak terkumpul untuk bulan semasa
+                    const jumlahJarakInput = document.getElementById('jumlah_jarak_terkumpul');
+                    const currentTotal = parseFloat(jumlahJarakInput.value) || 0;
+                    jumlahJarakInput.value = (currentTotal + totalJarak).toFixed(1);
+                    
+                    // Set elaun rate display
+                    elaunKmInput.value = "0.85";
                 } else {
                     kosPengangkutanAutoInput.value = '';
+                    elaunKmInput.value = '';
                 }
                 calculateTotal();
             }
@@ -564,13 +576,25 @@
 
             function calculateTotal() {
                 let total = 0;
-                kosInputs.forEach(inputId => {
-                    const input = document.getElementById(inputId);
-                    if (input && input.value) {
-                        total += parseFloat(input.value) || 0;
-                    }
-                });
+                
+                // Calculate from all cost inputs
+                const kos_pengangkutan = parseFloat(document.getElementById('kos_pengangkutan').value) || 0;
+                const kos_pengangkutan_auto = parseFloat(document.getElementById('kos_pengangkutan_auto').value) || 0;
+                const kos_penginapan = parseFloat(document.getElementById('kos_penginapan').value) || 0;
+                const kos_tol = parseFloat(document.getElementById('kos_tol').value) || 0;
+                const kos_lain = parseFloat(document.getElementById('kos_lain').value) || 0;
+                const elaun_harian = parseFloat(document.getElementById('elaun_harian').value) || 0;
+                const elaun_penginapan = parseFloat(document.getElementById('elaun_penginapan').value) || 0;
+                
+                // Sum all costs - use either manual or auto transport cost (not both)
+                total = Math.max(kos_pengangkutan, kos_pengangkutan_auto) + kos_penginapan + kos_tol + kos_lain + elaun_harian + elaun_penginapan;
+                
                 jumlahInput.value = total.toFixed(2);
+                
+                // Also update the manual transport cost field to match auto calculation if auto is higher
+                if (kos_pengangkutan_auto > kos_pengangkutan && kos_pengangkutan_auto > 0) {
+                    document.getElementById('kos_pengangkutan').value = kos_pengangkutan_auto;
+                }
             }
         }
 
@@ -970,5 +994,5 @@
             setupRefreshButton();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99413b648295dce2',t:'MTc2MTM5MDI1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941579811816b5d',t:'MTc2MTM5MTQxMC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
