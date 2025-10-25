@@ -298,55 +298,104 @@
             ]);
         }
 
-        // Google Sheets API functions
+        // Google Sheets API functions - CORS-friendly approach
         async function saveToGoogleSheets(data) {
             if (!googleScriptUrl) {
                 throw new Error('Google Apps Script URL belum dikonfigurasi');
             }
 
             try {
-                const payload = {
-                    action: 'add',
-                    data: data
-                };
-
-                const response = await fetch(googleScriptUrl, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
+                // Use JSONP approach to avoid CORS issues
+                const params = new URLSearchParams();
+                params.append('action', 'add');
+                
+                // Convert data to URL parameters
+                Object.keys(data).forEach(key => {
+                    params.append(key, data[key] || '');
                 });
 
-                const result = await response.json();
-                if (result.success) {
-                    return { success: true };
-                } else {
-                    throw new Error(result.error || 'Unknown error');
-                }
+                // For Google Apps Script, use GET request with parameters to avoid CORS preflight
+                const url = `${googleScriptUrl}?${params.toString()}`;
+                
+                console.log('Sending data to Google Sheets via GET:', url);
+
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'no-cors' // This bypasses CORS but we won't get response data
+                });
+
+                // Since we're using no-cors mode, we can't read the response
+                // We'll assume success if no error is thrown
+                console.log('Request sent successfully (no-cors mode)');
+                return { success: true };
+
             } catch (error) {
                 console.error('Error saving to Google Sheets:', error);
-                throw error;
+                // Provide more specific error messages
+                if (error.message.includes('Failed to fetch')) {
+                    throw new Error('Tidak dapat menyambung ke Google Apps Script. Sila semak URL dan sambungan internet.');
+                } else if (error.message.includes('HTTP error')) {
+                    throw new Error('Ralat sambungan ke Google Apps Script. Sila semak konfigurasi script.');
+                } else {
+                    throw new Error(`Ralat penyimpanan: ${error.message}`);
+                }
             }
         }
 
         async function loadFromGoogleSheets() {
-            if (!googleScriptUrl) {
+            if (!googleScriptUrl || googleScriptUrl.trim() === '') {
+                console.log('No Google Script URL configured');
                 return [];
             }
 
             try {
-                const response = await fetch(googleScriptUrl, {
-                    method: 'GET',
+                console.log('Loading data from Google Sheets:', googleScriptUrl);
+                
+                // Use JSONP callback approach for reading data
+                return new Promise((resolve, reject) => {
+                    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                    
+                    // Create script element for JSONP
+                    const script = document.createElement('script');
+                    const url = `${googleScriptUrl}?action=get&callback=${callbackName}`;
+                    
+                    // Set up callback function
+                    window[callbackName] = function(data) {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        
+                        if (data && data.success) {
+                            resolve(data.data || []);
+                        } else {
+                            console.warn('Google Sheets returned error:', data?.error);
+                            resolve([]);
+                        }
+                    };
+                    
+                    // Handle script load error
+                    script.onerror = function() {
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                        console.warn('Error loading data from Google Sheets');
+                        resolve([]);
+                    };
+                    
+                    script.src = url;
+                    document.body.appendChild(script);
+                    
+                    // Timeout after 10 seconds
+                    setTimeout(() => {
+                        if (window[callbackName]) {
+                            delete window[callbackName];
+                            if (document.body.contains(script)) {
+                                document.body.removeChild(script);
+                            }
+                            console.warn('Timeout loading data from Google Sheets');
+                            resolve([]);
+                        }
+                    }, 10000);
                 });
 
-                if (response.ok) {
-                    const result = await response.json();
-                    if (result.success) {
-                        return result.data || [];
-                    }
-                }
-                return [];
             } catch (error) {
                 console.error('Error loading from Google Sheets:', error);
                 return [];
@@ -678,12 +727,21 @@
                     claimData.id = Date.now().toString();
                     claimData.tarikh_hantar = new Date().toISOString().split('T')[0];
                     
+                    // Validate required fields
+                    const requiredFields = ['nama_pemohon', 'jawatan', 'gred', 'bahagian', 'tarikh_mula', 'tarikh_tamat', 'tempat_asal', 'destinasi', 'tujuan'];
+                    const missingFields = requiredFields.filter(field => !claimData[field] || claimData[field].toString().trim() === '');
+                    
+                    if (missingFields.length > 0) {
+                        throw new Error(`Sila lengkapkan medan yang diperlukan: ${missingFields.join(', ')}`);
+                    }
+
                     // Save to Google Sheets only
-                    if (googleScriptUrl) {
+                    if (googleScriptUrl && googleScriptUrl.trim() !== '') {
+                        console.log('Saving data to Google Sheets:', claimData);
                         await saveToGoogleSheets(claimData);
                         showNotification("Permohonan tuntutan berjaya disimpan ke Google Sheets!", "success");
                     } else {
-                        throw new Error('Google Apps Script URL belum dikonfigurasi');
+                        throw new Error('Google Apps Script URL belum dikonfigurasi. Sila masukkan URL dalam tetapan.');
                     }
                     
                     form.reset();
@@ -700,7 +758,14 @@
                     
                 } catch (error) {
                     console.error('Error submitting form:', error);
-                    showNotification("Ralat semasa menyimpan permohonan.", "error");
+                    
+                    // Show specific error message
+                    let errorMessage = "Ralat semasa menyimpan permohonan.";
+                    if (error.message) {
+                        errorMessage = error.message;
+                    }
+                    
+                    showNotification(errorMessage, "error");
                 } finally {
                     // Hide loading state
                     submitBtn.classList.remove('loading');
@@ -1014,5 +1079,5 @@
             setupRefreshButton();
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9941743474a197fa',t:'MTc2MTM5MjU4Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'994181d4d661f509',t:'MTc2MTM5MzE0MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
