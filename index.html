@@ -1934,9 +1934,6 @@
             let grandTotal = 0;
             let totalTransport = 0;
             let totalToll = 0;
-            let totalAccommodation = 0;
-            let totalDaily = 0;
-            let totalAccommodationAllowance = 0;
             let totalOthers = 0;
 
             // Generate content for each month
@@ -1945,9 +1942,6 @@
                 let monthTotal = 0;
                 let monthTransport = 0;
                 let monthToll = 0;
-                let monthAccommodation = 0;
-                let monthDaily = 0;
-                let monthAccommodationAllowance = 0;
                 let monthOthers = 0;
 
                 summaryHTML += `
@@ -1961,12 +1955,10 @@
                                 <tr style="background: #e9ecef;">
                                     <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Tarikh</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Destinasi</th>
+                                    <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Tujuan Perjalanan</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: center; font-weight: bold;">Jarak (KM)</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Pengangkutan</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Tol</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Penginapan</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Elaun Harian</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Elaun Penginapan</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Lain-lain</th>
                                     <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Jumlah</th>
                                 </tr>
@@ -1977,30 +1969,26 @@
                 monthClaims.forEach(claim => {
                     const transport = parseFloat(claim.kos_pengangkutan || 0);
                     const toll = parseFloat(claim.kos_tol || 0);
-                    const accommodation = parseFloat(claim.kos_penginapan || 0);
-                    const daily = parseFloat(claim.elaun_harian || 0);
-                    const accommodationAllowance = parseFloat(claim.elaun_penginapan || 0);
                     const others = parseFloat(claim.kos_lain || 0);
                     const total = parseFloat(claim.jumlah_keseluruhan || 0);
 
                     monthTransport += transport;
                     monthToll += toll;
-                    monthAccommodation += accommodation;
-                    monthDaily += daily;
-                    monthAccommodationAllowance += accommodationAllowance;
                     monthOthers += others;
                     monthTotal += total;
+
+                    // Truncate tujuan if too long for display
+                    const tujuan = claim.tujuan || '';
+                    const displayTujuan = tujuan.length > 50 ? tujuan.substring(0, 47) + '...' : tujuan;
 
                     summaryHTML += `
                         <tr>
                             <td style="padding: 6px; border: 1px solid #ccc;">${formatDateOnly(claim.tarikh_mula)} - ${formatDateOnly(claim.tarikh_tamat)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc;">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
+                            <td style="padding: 6px; border: 1px solid #ccc; font-size: 10px;">${displayTujuan}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${claim.jarak_total || '0'}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${transport.toFixed(2)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${toll.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${accommodation.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${daily.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${accommodationAllowance.toFixed(2)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${others.toFixed(2)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">${total.toFixed(2)}</td>
                         </tr>
@@ -2011,12 +1999,9 @@
                             </tbody>
                             <tfoot>
                                 <tr style="background: #f8f9fa; font-weight: bold;">
-                                    <td colspan="3" style="padding: 10px; border: 2px solid #000; text-align: center;">JUMLAH ${monthYear.toUpperCase()}</td>
+                                    <td colspan="4" style="padding: 10px; border: 2px solid #000; text-align: center;">JUMLAH ${monthYear.toUpperCase()}</td>
                                     <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthTransport.toFixed(2)}</td>
                                     <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthToll.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthAccommodation.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthDaily.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthAccommodationAllowance.toFixed(2)}</td>
                                     <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthOthers.toFixed(2)}</td>
                                     <td style="padding: 10px; border: 2px solid #000; text-align: right; font-size: 13px;">RM ${monthTotal.toFixed(2)}</td>
                                 </tr>
@@ -2027,9 +2012,6 @@
 
                 totalTransport += monthTransport;
                 totalToll += monthToll;
-                totalAccommodation += monthAccommodation;
-                totalDaily += monthDaily;
-                totalAccommodationAllowance += monthAccommodationAllowance;
                 totalOthers += monthOthers;
                 grandTotal += monthTotal;
             });
@@ -2053,18 +2035,6 @@
                         <tr>
                             <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Tol:</td>
                             <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalToll.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Penginapan:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalAccommodation.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Elaun Harian:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalDaily.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Elaun Penginapan:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalAccommodationAllowance.toFixed(2)}</td>
                         </tr>
                         <tr>
                             <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Lain-lain:</td>
@@ -2396,5 +2366,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9947a43632f40c6d',t:'MTc2MTQ1NzQ2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9947baa162db0c6d',t:'MTc2MTQ1ODM4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
