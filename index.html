@@ -768,11 +768,25 @@
     </form>
    </div><!-- Tab 2: Senarai Tuntutan -->
    <div id="list-tab" class="tab-content">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-     <h2>📋 Senarai Tuntutan</h2><button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;"> 🔄 Muat Semula </button>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px;">
+     <h2>📋 Senarai Tuntutan</h2>
+     <div style="display: flex; gap: 10px; flex-wrap: wrap;"><button onclick="testConnection()" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; padding: 12px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3); transition: all 0.3s ease; font-size: 0.9rem;"> 🔗 Uji Sambungan </button> <button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;"> 🔄 Muat Semula </button>
+     </div>
     </div>
     <div id="claimsContainer">
-     <p style="text-align: center; color: #666; padding: 40px;">Klik "Muat Semula" untuk melihat senarai tuntutan</p>
+     <div style="background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(32, 201, 151, 0.1) 100%); padding: 20px; border-radius: 16px; margin-bottom: 20px; border-left: 4px solid #28a745;">
+      <h4 style="color: #155724; margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px;"><span>💡</span> Panduan Penyelesaian Masalah</h4>
+      <div style="color: #155724; font-size: 0.95rem; line-height: 1.6;">
+       <p style="margin: 0 0 8px 0;"><strong>Jika mengalami masalah sambungan:</strong></p>
+       <ul style="margin: 0; padding-left: 20px;">
+        <li>Klik <strong>"🔗 Uji Sambungan"</strong> untuk semak status Google Sheet</li>
+        <li>Pastikan sambungan internet stabil</li>
+        <li>Pastikan Google Apps Script telah dipublish dengan akses "Anyone"</li>
+        <li>Cuba muat semula halaman jika masalah berterusan</li>
+       </ul>
+      </div>
+     </div>
+     <p style="text-align: center; color: #666; padding: 40px;">Klik "🔗 Uji Sambungan" untuk semak status, kemudian "🔄 Muat Semula" untuk melihat senarai tuntutan</p>
     </div>
    </div><!-- Tab 3: Kadar Elaun -->
    <div id="rates-tab" class="tab-content">
@@ -994,9 +1008,13 @@
             }
         };
 
-        // Google Apps Script functions
+        // Google Apps Script functions with improved error handling
         async function saveToGoogleSheet(claim) {
             try {
+                // Add timeout and better error handling
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+                
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: {
@@ -1005,24 +1023,52 @@
                     body: new URLSearchParams({
                         action: 'add',
                         ...claim
-                    })
+                    }),
+                    signal: controller.signal,
+                    mode: 'cors'
                 });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 
                 const result = await response.json();
                 if (result.success) {
                     await loadFromGoogleSheet();
                     return { success: true };
                 } else {
-                    throw new Error(result.message || 'Gagal menyimpan data');
+                    throw new Error(result.message || 'Gagal menyimpan data ke Google Sheet');
                 }
             } catch (error) {
-                throw new Error('Ralat sambungan: ' + error.message);
+                if (error.name === 'AbortError') {
+                    throw new Error('Sambungan tamat masa. Sila cuba lagi.');
+                } else if (error.message.includes('Failed to fetch')) {
+                    throw new Error('Tidak dapat menyambung ke Google Sheet. Sila semak sambungan internet dan cuba lagi.');
+                } else {
+                    throw new Error('Ralat menyimpan: ' + error.message);
+                }
             }
         }
 
         async function loadFromGoogleSheet() {
             try {
-                const response = await fetch(scriptUrl + '?action=list');
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout
+                
+                const response = await fetch(scriptUrl + '?action=list', {
+                    method: 'GET',
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
                 const result = await response.json();
                 
                 if (result.success) {
@@ -1030,16 +1076,25 @@
                     currentRecordCount = allClaims.length;
                     updateClaimsDisplay();
                 } else {
-                    throw new Error(result.message || 'Gagal memuat data');
+                    throw new Error(result.message || 'Gagal memuat data dari Google Sheet');
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                showMessage('error', 'Ralat memuat data: ' + error.message);
+                if (error.name === 'AbortError') {
+                    showMessage('error', '⏰ Sambungan tamat masa. Sila cuba lagi.');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showMessage('error', '🌐 Tidak dapat menyambung ke Google Sheet. Sila semak sambungan internet.');
+                } else {
+                    showMessage('error', '❌ Ralat memuat data: ' + error.message);
+                }
             }
         }
 
         async function deleteFromGoogleSheet(claimId) {
             try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
+                
                 const response = await fetch(scriptUrl, {
                     method: 'POST',
                     headers: {
@@ -1048,18 +1103,32 @@
                     body: new URLSearchParams({
                         action: 'delete',
                         id: claimId
-                    })
+                    }),
+                    signal: controller.signal,
+                    mode: 'cors'
                 });
+                
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
                 
                 const result = await response.json();
                 if (result.success) {
                     await loadFromGoogleSheet();
                     return { success: true };
                 } else {
-                    throw new Error(result.message || 'Gagal memadam data');
+                    throw new Error(result.message || 'Gagal memadam data dari Google Sheet');
                 }
             } catch (error) {
-                throw new Error('Ralat sambungan: ' + error.message);
+                if (error.name === 'AbortError') {
+                    throw new Error('Sambungan tamat masa. Sila cuba lagi.');
+                } else if (error.message.includes('Failed to fetch')) {
+                    throw new Error('Tidak dapat menyambung ke Google Sheet. Sila semak sambungan internet.');
+                } else {
+                    throw new Error('Ralat memadam: ' + error.message);
+                }
             }
         }
 
@@ -1500,6 +1569,50 @@
             container.innerHTML = summaryHTML + tableHTML;
         }
 
+        // Test connection to Google Sheet
+        async function testConnection() {
+            const testBtn = event.target;
+            const originalText = testBtn.innerHTML;
+            
+            testBtn.innerHTML = '⏳ Menguji...';
+            testBtn.disabled = true;
+            
+            try {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+                
+                const response = await fetch(scriptUrl + '?action=test', {
+                    method: 'GET',
+                    signal: controller.signal,
+                    mode: 'cors'
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    if (result.success || result.status === 'ok') {
+                        showMessage('success', '✅ Sambungan ke Google Sheet berjaya! URL berfungsi dengan baik.');
+                    } else {
+                        showMessage('error', '⚠️ Google Sheet bertindak balas tetapi ada masalah: ' + (result.message || 'Status tidak diketahui'));
+                    }
+                } else {
+                    showMessage('error', `❌ Google Sheet mengembalikan ralat HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                if (error.name === 'AbortError') {
+                    showMessage('error', '⏰ Ujian sambungan tamat masa. Google Sheet mungkin lambat bertindak balas.');
+                } else if (error.message.includes('Failed to fetch')) {
+                    showMessage('error', '🌐 Tidak dapat menyambung ke Google Sheet. Kemungkinan sebab:\n• Sambungan internet terputus\n• URL Google Apps Script tidak betul\n• Google Apps Script tidak dipublish sebagai "Anyone" access');
+                } else {
+                    showMessage('error', '❌ Ralat ujian sambungan: ' + error.message);
+                }
+            } finally {
+                testBtn.innerHTML = originalText;
+                testBtn.disabled = false;
+            }
+        }
+
         // Load claims from Google Sheet
         async function loadClaims() {
             await loadFromGoogleSheet();
@@ -1655,5 +1768,5 @@
             return months[monthIndex];
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99472568f57d0c6d',t:'MTc2MTQ1MjI2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99472ae4643b0c6d',t:'MTc2MTQ1MjQ5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
