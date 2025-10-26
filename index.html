@@ -761,7 +761,9 @@
       <p class="total-amount">RM <span id="display_jumlah_keseluruhan">0.00</span></p><input type="hidden" id="jumlah_keseluruhan" name="jumlah_keseluruhan" value="0">
      </div>
      <div class="error-message" id="errorMessage"></div>
-     <div class="success-message" id="successMessage"></div><button type="submit" class="submit-btn" id="submitBtn"> 📤 Hantar Permohonan Tuntutan </button>
+     <div class="success-message" id="successMessage"></div>
+     <div style="display: flex; gap: 15px; flex-wrap: wrap;"><button type="submit" class="submit-btn" id="submitBtn" style="flex: 1; min-width: 200px;"> 📤 Hantar Permohonan Tuntutan </button> <button type="button" onclick="resetForm()" class="submit-btn" style="flex: 0 0 auto; min-width: 150px; background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); box-shadow: 0 8px 32px rgba(108, 117, 125, 0.4);"> 🔄 Reset Borang </button>
+     </div>
      <div class="loading" id="loading">
       <p>⏳ Sedang menghantar permohonan...</p>
      </div>
@@ -1528,12 +1530,12 @@
                 <table class="claims-table">
                     <thead>
                         <tr>
-                            <th>ID</th>
-                            <th>Nama</th>
                             <th>Tarikh</th>
+                            <th>Masa</th>
+                            <th>Nama</th>
                             <th>Destinasi</th>
+                            <th>Tujuan Perjalanan</th>
                             <th>Jumlah (RM)</th>
-                            <th>Status</th>
                             <th>Tindakan</th>
                         </tr>
                     </thead>
@@ -1546,18 +1548,25 @@
             );
             
             sortedClaims.forEach(claim => {
-                const statusClass = getStatusClass(claim.status || 'Dalam Proses');
-                const submissionDate = new Date(claim.tarikh_hantar).toLocaleDateString('ms-MY');
+                // Format date to show only date without time
+                const formattedDate = claim.tarikh_mula ? formatDateOnly(claim.tarikh_mula) : '';
+                
+                // Format time from masa_pergi to show in 10.30 AM format
+                const formattedTime = claim.masa_pergi ? formatTimeForDisplay(claim.masa_pergi) : '';
                 
                 tableHTML += `
                     <tr>
-                        <td data-label="ID">${claim.id || ''}</td>
+                        <td data-label="Tarikh">${formattedDate}</td>
+                        <td data-label="Masa">${formattedTime}</td>
                         <td data-label="Nama">${claim.nama || ''}</td>
-                        <td data-label="Tarikh">${claim.tarikh_mula || ''} - ${claim.tarikh_tamat || ''}</td>
                         <td data-label="Destinasi">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
+                        <td data-label="Tujuan Perjalanan" style="max-width: 300px; word-wrap: break-word;">${claim.tujuan || ''}</td>
                         <td data-label="Jumlah">RM ${parseFloat(claim.jumlah_keseluruhan || 0).toFixed(2)}</td>
-                        <td data-label="Status"><span class="status-badge ${statusClass}">${claim.status || 'Dalam Proses'}</span></td>
                         <td data-label="Tindakan">
+                            <button onclick="editClaim('${claim.id}')" 
+                                    style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3); margin-right: 5px;">
+                                ✏️ Edit
+                            </button>
                             <button onclick="previewPDF('${claim.id}')" 
                                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3); margin-right: 5px;">
                                 📄 PDF
@@ -1635,6 +1644,68 @@
         // Load claims from Google Sheet
         async function loadClaims() {
             await loadFromGoogleSheet();
+        }
+
+        // Edit claim function
+        function editClaim(claimId) {
+            // Find the claim to edit
+            const claimToEdit = allClaims.find(claim => claim.id === claimId);
+            if (!claimToEdit) {
+                showMessage('error', '❌ Tuntutan tidak dijumpai');
+                return;
+            }
+
+            // Populate form with existing data
+            document.getElementById('claimId').value = claimToEdit.id || '';
+            document.getElementById('nama').value = claimToEdit.nama || '';
+            document.getElementById('jawatan').value = claimToEdit.jawatan || '';
+            document.getElementById('gred').value = claimToEdit.gred || '';
+            document.getElementById('bahagian').value = claimToEdit.bahagian || '';
+            document.getElementById('tahun_tuntutan').value = claimToEdit.tahun_tuntutan || '';
+            document.getElementById('bulan_tuntutan').value = claimToEdit.bulan_tuntutan || '';
+            document.getElementById('tarikh_mula').value = claimToEdit.tarikh_mula || '';
+            document.getElementById('tarikh_tamat').value = claimToEdit.tarikh_tamat || '';
+            document.getElementById('masa_pergi').value = claimToEdit.masa_pergi || '';
+            document.getElementById('tempoh_perjalanan').value = claimToEdit.tempoh_perjalanan || '';
+            document.getElementById('masa_sampai').value = claimToEdit.masa_sampai || '';
+            document.getElementById('masa_balik').value = claimToEdit.masa_balik || '';
+            document.getElementById('masa_tiba').value = claimToEdit.masa_tiba || '';
+            document.getElementById('tempat_asal').value = claimToEdit.tempat_asal || '';
+            document.getElementById('destinasi').value = claimToEdit.destinasi || '';
+            document.getElementById('jarak_sehala').value = claimToEdit.jarak_sehala || '';
+            document.getElementById('jarak_total').value = claimToEdit.jarak_total || '';
+            document.getElementById('pengangkutan').value = claimToEdit.pengangkutan || '';
+            document.getElementById('no_kenderaan').value = claimToEdit.no_kenderaan || '';
+            document.getElementById('plaza_tol_masuk').value = claimToEdit.plaza_tol_masuk || '';
+            document.getElementById('plaza_tol_keluar').value = claimToEdit.plaza_tol_keluar || '';
+            document.getElementById('tol_pergi').value = claimToEdit.tol_pergi || '0';
+            document.getElementById('tol_balik').value = claimToEdit.tol_balik || '0';
+            document.getElementById('catatan_tol').value = claimToEdit.catatan_tol || '';
+            document.getElementById('kategori_perjalanan').value = claimToEdit.kategori_perjalanan || '';
+            document.getElementById('tujuan').value = claimToEdit.tujuan || '';
+            document.getElementById('kos_pengangkutan').value = claimToEdit.kos_pengangkutan || '0';
+            document.getElementById('kos_tol').value = claimToEdit.kos_tol || '0';
+            document.getElementById('kos_penginapan').value = claimToEdit.kos_penginapan || '0';
+            document.getElementById('elaun_harian').value = claimToEdit.elaun_harian || '0';
+            document.getElementById('elaun_penginapan').value = claimToEdit.elaun_penginapan || '0';
+            document.getElementById('kos_lain').value = claimToEdit.kos_lain || '0';
+            document.getElementById('jumlah_keseluruhan').value = claimToEdit.jumlah_keseluruhan || '0';
+
+            // Update display values
+            document.getElementById('display_kos_pengangkutan').textContent = parseFloat(claimToEdit.kos_pengangkutan || 0).toFixed(2);
+            document.getElementById('display_kos_tol').textContent = parseFloat(claimToEdit.kos_tol || 0).toFixed(2);
+            document.getElementById('display_jumlah_keseluruhan').textContent = parseFloat(claimToEdit.jumlah_keseluruhan || 0).toFixed(2);
+
+            // Change submit button text to indicate editing
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '💾 Kemaskini Tuntutan';
+            submitBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+
+            // Switch to form tab
+            showTab('form');
+
+            // Show success message
+            showMessage('success', '✏️ Data tuntutan telah dimuatkan untuk dikemaskini. Sila buat perubahan dan klik "Kemaskini Tuntutan".');
         }
 
         // Delete claim function
@@ -1832,6 +1903,11 @@
             document.getElementById('kos_penginapan').value = '0';
             document.getElementById('elaun_harian').value = '0';
             document.getElementById('kos_lain').value = '0';
+
+            // Reset submit button to default state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '📤 Hantar Permohonan Tuntutan';
+            submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
         }
 
         // Format date for display (remove time part)
@@ -1856,6 +1932,76 @@
                 hour: '2-digit',
                 minute: '2-digit'
             });
+        }
+
+        // Format time for display in table (10.30 AM format)
+        function formatTimeForDisplay(timeString) {
+            if (!timeString) return '';
+            
+            // If already in correct format, return as is
+            if (timeString.match(/^\d{1,2}\.\d{2}\s*(AM|PM)$/i)) {
+                return timeString;
+            }
+            
+            // Parse the time and format it
+            const parsedTime = parseTimeInput(timeString);
+            if (parsedTime) {
+                return formatTimeDisplay(parsedTime.hour, parsedTime.minute);
+            }
+            
+            return timeString; // Return original if can't parse
+        }
+
+        // Reset form function (without resetting default values)
+        function resetForm() {
+            // Show confirmation
+            if (!confirm('Adakah anda pasti mahu reset borang ini? Semua data yang dimasukkan akan hilang.')) {
+                return;
+            }
+
+            // Clear only user-input fields, keep default values
+            document.getElementById('claimId').value = 'TC' + Date.now();
+            document.getElementById('tarikh_mula').value = '';
+            document.getElementById('tarikh_tamat').value = '';
+            document.getElementById('masa_pergi').value = '';
+            document.getElementById('tempoh_perjalanan').value = '';
+            document.getElementById('masa_sampai').value = '';
+            document.getElementById('masa_balik').value = '';
+            document.getElementById('masa_tiba').value = '';
+            document.getElementById('destinasi').value = '';
+            document.getElementById('jarak_sehala').value = '';
+            document.getElementById('jarak_total').value = '';
+            document.getElementById('plaza_tol_masuk').value = '';
+            document.getElementById('plaza_tol_keluar').value = '';
+            document.getElementById('tol_pergi').value = '0';
+            document.getElementById('tol_balik').value = '0';
+            document.getElementById('catatan_tol').value = '';
+            document.getElementById('kategori_perjalanan').value = '';
+            document.getElementById('tujuan').value = '';
+            
+            // Reset calculation fields
+            document.getElementById('kos_penginapan').value = '0';
+            document.getElementById('elaun_harian').value = '0';
+            document.getElementById('elaun_penginapan').value = '0';
+            document.getElementById('kos_lain').value = '0';
+            
+            // Reset display values
+            document.getElementById('display_kos_pengangkutan').textContent = '0.00';
+            document.getElementById('display_kos_tol').textContent = '0.00';
+            document.getElementById('display_jumlah_keseluruhan').textContent = '0.00';
+            
+            // Reset hidden fields
+            document.getElementById('kos_pengangkutan').value = '0';
+            document.getElementById('kos_tol').value = '0';
+            document.getElementById('jumlah_keseluruhan').value = '0';
+
+            // Reset submit button to default state
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.innerHTML = '📤 Hantar Permohonan Tuntutan';
+            submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+
+            // Show success message
+            showMessage('success', '🔄 Borang telah direset. Nilai lalai dikekalkan.');
         }
 
         // Preview PDF function
@@ -1977,15 +2123,14 @@
                     monthOthers += others;
                     monthTotal += total;
 
-                    // Truncate tujuan if too long for display
+                    // Display full tujuan without truncation
                     const tujuan = claim.tujuan || '';
-                    const displayTujuan = tujuan.length > 50 ? tujuan.substring(0, 47) + '...' : tujuan;
 
                     summaryHTML += `
                         <tr>
                             <td style="padding: 6px; border: 1px solid #ccc;">${formatDateOnly(claim.tarikh_mula)} - ${formatDateOnly(claim.tarikh_tamat)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc;">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; font-size: 10px;">${displayTujuan}</td>
+                            <td style="padding: 6px; border: 1px solid #ccc; font-size: 10px; line-height: 1.3;">${tujuan}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${claim.jarak_total || '0'}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${transport.toFixed(2)}</td>
                             <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${toll.toFixed(2)}</td>
@@ -2366,5 +2511,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9947baa162db0c6d',t:'MTc2MTQ1ODM4MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9948091584b90c6d',t:'MTc2MTQ2MTU5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
