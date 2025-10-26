@@ -1535,6 +1535,7 @@
                             <th>Nama</th>
                             <th>Destinasi</th>
                             <th>Tujuan Perjalanan</th>
+                            <th>Jumlah KM</th>
                             <th>Jumlah (RM)</th>
                             <th>Tindakan</th>
                         </tr>
@@ -1561,6 +1562,7 @@
                         <td data-label="Nama">${claim.nama || ''}</td>
                         <td data-label="Destinasi">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
                         <td data-label="Tujuan Perjalanan" style="max-width: 300px; word-wrap: break-word;">${claim.tujuan || ''}</td>
+                        <td data-label="Jumlah KM">${parseFloat(claim.jarak_total || 0).toFixed(1)} KM</td>
                         <td data-label="Jumlah">RM ${parseFloat(claim.jumlah_keseluruhan || 0).toFixed(2)}</td>
                         <td data-label="Tindakan">
                             <button onclick="editClaim('${claim.id}')" 
@@ -1584,11 +1586,13 @@
             
             // Add summary info
             const totalAmount = allClaims.reduce((sum, claim) => sum + (parseFloat(claim.jumlah_keseluruhan) || 0), 0);
+            const totalKM = allClaims.reduce((sum, claim) => sum + (parseFloat(claim.jarak_total) || 0), 0);
             const summaryHTML = `
                 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center;">
                     <h3 style="margin: 0 0 10px 0;">📊 Ringkasan Tuntutan</h3>
                     <p style="margin: 0; font-size: 1.1rem;">
                         <strong>Jumlah Tuntutan:</strong> ${allClaims.length} | 
+                        <strong>Jumlah KM:</strong> ${totalKM.toFixed(1)} KM | 
                         <strong>Jumlah Keseluruhan:</strong> RM ${totalAmount.toFixed(2)}
                     </p>
                 </div>
@@ -2114,20 +2118,20 @@
                     <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 20px;">
                         <thead>
                             <tr style="background: #f0f0f0;">
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">BIL</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 12%;">TARIKH</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">MASA<br>PERGI</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 20%;">DESTINASI</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 22%;">TUJUAN PERJALANAN</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">JARAK<br>(KM)</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 10%;">TARIKH</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 9%;">MASA PERGI<br>& SAMPAI</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 9%;">MASA BALIK<br>& TIBA</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 15%;">DESTINASI</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 23%;">TUJUAN PERJALANAN</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 6%;">JARAK<br>(KM)</th>
                                 <th colspan="4" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold;">TUNTUTAN (RM)</th>
-                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 10%;">JUMLAH<br>(RM)</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 7%;">JUMLAH<br>(RM)</th>
                             </tr>
                             <tr style="background: #f0f0f0;">
-                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">KENDERAAN</th>
-                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">TOL</th>
-                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">ELAUN</th>
-                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">LAIN-LAIN</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5%;">KENDERAAN</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5%;">TOL</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5%;">ELAUN</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5%;">LAIN-LAIN</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -2138,6 +2142,7 @@
             let totalToll = 0;
             let totalAllowance = 0;
             let totalOthers = 0;
+            let totalDistance = 0;
 
             // Generate rows for each claim
             sortedClaims.forEach((claim, index) => {
@@ -2146,25 +2151,29 @@
                 const allowance = parseFloat(claim.elaun_harian || 0) + parseFloat(claim.elaun_penginapan || 0) + parseFloat(claim.kos_penginapan || 0);
                 const others = parseFloat(claim.kos_lain || 0);
                 const total = parseFloat(claim.jumlah_keseluruhan || 0);
+                const distance = parseFloat(claim.jarak_total || 0);
 
                 totalTransport += transport;
                 totalToll += toll;
                 totalAllowance += allowance;
                 totalOthers += others;
                 grandTotal += total;
+                totalDistance += distance;
 
-                // Format tujuan to fit in cell
-                const tujuan = (claim.tujuan || '').length > 80 ? 
-                    (claim.tujuan || '').substring(0, 77) + '...' : 
-                    (claim.tujuan || '');
+                // Don't truncate tujuan - show full text
+                const tujuan = claim.tujuan || '';
+
+                // Format combined time columns
+                const masaPergiSampai = `${formatTimeForDisplay(claim.masa_pergi || '')}<br><small style="color: #666;">${formatTimeForDisplay(claim.masa_sampai || '')}</small>`;
+                const masaBalikTiba = `${formatTimeForDisplay(claim.masa_balik || '')}<br><small style="color: #666;">${formatTimeForDisplay(claim.masa_tiba || '')}</small>`;
 
                 summaryHTML += `
                     <tr>
-                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center;">${index + 1}</td>
                         <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 9px;">${formatDateOnly(claim.tarikh_mula)}</td>
-                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 9px;">${formatTimeForDisplay(claim.masa_pergi || '')}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 8px; line-height: 1.2;">${masaPergiSampai}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 8px; line-height: 1.2;">${masaBalikTiba}</td>
                         <td style="padding: 6px 4px; border: 1px solid #000; font-size: 9px; line-height: 1.2;">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
-                        <td style="padding: 6px 4px; border: 1px solid #000; font-size: 8px; line-height: 1.2;">${tujuan}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; font-size: 8px; line-height: 1.3; word-wrap: break-word;">${tujuan}</td>
                         <td style="padding: 6px 4px; border: 1px solid #000; text-align: center;">${claim.jarak_total || '0'}</td>
                         <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${transport.toFixed(2)}</td>
                         <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${toll.toFixed(2)}</td>
@@ -2181,7 +2190,7 @@
             for (let i = 0; i < emptyRows; i++) {
                 summaryHTML += `
                     <tr>
-                        <td style="padding: 12px 4px; border: 1px solid #000; text-align: center;">${sortedClaims.length + i + 1}</td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
                         <td style="padding: 12px 4px; border: 1px solid #000;"></td>
                         <td style="padding: 12px 4px; border: 1px solid #000;"></td>
                         <td style="padding: 12px 4px; border: 1px solid #000;"></td>
@@ -2201,7 +2210,8 @@
                         </tbody>
                         <tfoot>
                             <tr style="background: #e9ecef; font-weight: bold;">
-                                <td colspan="6" style="padding: 10px 8px; border: 2px solid #000; text-align: center; font-size: 11px;">JUMLAH KESELURUHAN</td>
+                                <td colspan="5" style="padding: 10px 8px; border: 2px solid #000; text-align: center; font-size: 11px;">JUMLAH KESELURUHAN</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: center; font-size: 10px; font-weight: bold;">${totalDistance.toFixed(1)} KM</td>
                                 <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalTransport.toFixed(2)}</td>
                                 <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalToll.toFixed(2)}</td>
                                 <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalAllowance.toFixed(2)}</td>
@@ -2600,5 +2610,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9948f9d215e61ec5',t:'MTc2MTQ3MTQ1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99498a97e3f88177',t:'MTc2MTQ3NzM4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
