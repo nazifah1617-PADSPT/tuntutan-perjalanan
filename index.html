@@ -3,888 +3,1474 @@
  <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Tuntutan Perjalanan Dalam Negeri</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>SISTEM TUNTUTAN PERJALANAN</title>
+  <script src="/_sdk/element_sdk.js"></script>
   <style>
         body {
             box-sizing: border-box;
+            font-family: 'Biome', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100%;
+            line-height: 1.6;
         }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            margin-bottom: 32px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.15), 0 8px 32px rgba(118, 75, 162, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .header-logo {
+            height: 80px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(102, 126, 234, 0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+
+        .header-text {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            margin: 0 0 12px 0;
+            font-size: 2.2rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            font-family: 'Biome', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #34495e;
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 8px;
+            margin-bottom: 32px;
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.15), 0 4px 16px rgba(118, 75, 162, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px 20px;
+            text-align: center;
+            background: transparent;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #2c3e50;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            border-radius: 16px;
+        }
+
+        .tab.active {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab.active::before {
+            opacity: 1;
+        }
+
+        .tab span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab:hover:not(.active) {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            color: #764ba2;
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.2), 0 8px 32px rgba(118, 75, 162, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 24px;
+            border-radius: 20px;
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin: 0 0 24px 0;
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 1.05rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            font-weight: 500;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15), 0 4px 12px rgba(102, 126, 234, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .form-group input:hover:not(:focus),
+        .form-group select:hover:not(:focus),
+        .form-group textarea:hover:not(:focus) {
+            border-color: #764ba2;
+            box-shadow: 0 2px 8px rgba(118, 75, 162, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .calculation-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 20px;
+            margin: 32px 0;
+            box-shadow: 0 16px 48px rgba(102, 126, 234, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .calculation-section h3 {
+            margin: 0 0 28px 0;
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            text-align: right;
+        }
+
+        .calc-item {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 24px 20px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .calc-item:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .calc-item label {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            opacity: 0.95;
+            font-weight: 600;
+        }
+
+        .calc-item .amount {
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 20px;
+            text-align: center;
+            margin: 32px 0;
+            box-shadow: 0 16px 48px rgba(118, 75, 162, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .total-section h4 {
+            margin: 0 0 16px 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            opacity: 0.95;
+        }
+
+        .total-amount {
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin: 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: -0.02em;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 20px 48px;
+            border-radius: 16px;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 50px rgba(102, 126, 234, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 4px 16px rgba(149, 165, 166, 0.3);
+        }
+
+        .submit-btn:disabled::before {
+            display: none;
+        }
+
         .loading {
-            opacity: 0.6;
-            pointer-events: none;
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #764ba2;
         }
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white !important; }
-            .container { max-width: none !important; margin: 0 !important; padding: 20px !important; }
-            .claim-item { 
-                page-break-inside: avoid; 
-                border: 1px solid #ccc !important; 
-                margin-bottom: 15px !important;
-                padding: 15px !important;
-                background: white !important;
+
+        .loading.show {
+            display: block;
+        }
+
+        .claims-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .claims-table th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 18px 15px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .claims-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .claims-table tr:hover {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #764ba2 0%, #9575cd 100%);
+            color: white;
+        }
+
+        .status-approved {
+            background: linear-gradient(135deg, #667eea 0%, #7986cb 100%);
+            color: white;
+        }
+
+        .status-processing {
+            background: linear-gradient(135deg, #b39ddb 0%, #ce93d8 100%);
+            color: white;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #764ba2 0%, #9575cd 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.3);
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #667eea 0%, #7986cb 100%);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin: 15px 0;
+            display: none;
+            font-weight: 600;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
             }
-            .print-header {
-                text-align: center;
-                margin-bottom: 30px;
-                border-bottom: 2px solid #000;
-                padding-bottom: 15px;
+
+            .header {
+                padding: 20px 16px;
             }
-            .print-date {
-                text-align: right;
-                font-size: 12px;
-                margin-bottom: 20px;
+
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
             }
-            h1, h2, h3 { color: black !important; }
-            .text-blue-600, .text-gray-600, .text-gray-800 { color: black !important; }
+
+            .header-logo {
+                height: 60px;
+            }
+
+            .header-text {
+                min-width: auto;
+            }
+
+            .header h1 {
+                font-size: 1.6rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab {
+                margin-bottom: 5px;
+                font-size: 1rem;
+            }
+
+            .tab-content {
+                padding: 16px;
+            }
+
+            .form-section {
+                padding: 16px;
+            }
+
+            .calculation-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .calc-item {
+                padding: 16px;
+            }
+
+            .total-amount {
+                font-size: 2.5rem;
+            }
+
+            .claims-table {
+                font-size: 0.85rem;
+                overflow-x: auto;
+                display: block;
+                white-space: nowrap;
+            }
+
+            .claims-table thead,
+            .claims-table tbody,
+            .claims-table th,
+            .claims-table td,
+            .claims-table tr {
+                display: block;
+            }
+
+            .claims-table thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            .claims-table tr {
+                border: 2px solid rgba(102, 126, 234, 0.2);
+                margin-bottom: 10px;
+                padding: 10px;
+                border-radius: 12px;
+                background: white;
+            }
+
+            .claims-table td {
+                border: none;
+                position: relative;
+                padding: 8px 8px 8px 30%;
+                white-space: normal;
+                text-align: left;
+            }
+
+            .claims-table td:before {
+                content: attr(data-label) ": ";
+                position: absolute;
+                left: 6px;
+                width: 25%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+                color: #667eea;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 8px;
+            }
+
+            .header h1 {
+                font-size: 1.4rem;
+            }
+
+            .calculation-section,
+            .total-section {
+                padding: 16px;
+            }
+
+            .submit-btn {
+                padding: 16px 24px;
+                font-size: 1.1rem;
+            }
         }
     </style>
   <style>@view-transition { navigation: auto; }</style>
   <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/element_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
  </head>
- <body class="min-h-full bg-gray-50">
-  <div class="container mx-auto px-4 py-6 max-w-6xl"><!-- Header -->
-   <header class="bg-blue-900 text-white p-6 rounded-lg mb-6 shadow-lg">
-    <div class="text-center">
-     <h1 id="main-title" class="text-2xl font-bold mb-2">Sistem Tuntutan Perjalanan Dalam Negeri</h1>
-     <p id="department-name" class="text-blue-200">Kerajaan Malaysia</p>
-     <p class="text-blue-300 text-sm mt-2">Mengikut Pekeliling Perkhidmatan Bil. 1 Tahun 2025</p>
+ <body>
+  <div class="container">
+   <header class="header">
+    <div class="header-content"><img src="https://i.postimg.cc/3xV8wvhK/Penang-2030.png" alt="Logo Penang 2030" class="header-logo" onerror="this.style.display='none';">
+     <div class="header-text">
+      <h1 id="system-title">SISTEM TUNTUTAN PERJALANAN</h1>
+      <p id="department-name">JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG</p>
+     </div>
     </div>
-   </header><!-- Navigation Tabs -->
-   <nav class="mb-6">
-    <div class="flex space-x-1 bg-white rounded-lg p-1 shadow"><button id="tab-form" class="flex-1 py-2 px-4 rounded-md bg-blue-600 text-white font-medium transition-colors"> Borang Tuntutan </button> <button id="tab-list" class="flex-1 py-2 px-4 rounded-md text-gray-600 hover:bg-gray-100 font-medium transition-colors"> Senarai Tuntutan </button>
-    </div>
-   </nav><!-- Form Section -->
-   <section id="form-section" class="bg-white rounded-lg shadow-lg p-6 mb-6">
-    <h2 class="text-xl font-bold text-gray-800 mb-6 border-b pb-2">Borang Permohonan Tuntutan Perjalanan</h2>
-    <form id="claim-form" class="space-y-6"><!-- Personal Information -->
-     <div class="grid md:grid-cols-2 gap-6">
-      <div><label for="nama" class="block text-sm font-medium text-gray-700 mb-2">Nama Penuh</label> <input type="text" id="nama" name="nama" required value="AHMAD HAFIZAN BIN ABD HALIM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+   </header>
+   <div class="tabs"><button class="tab active" onclick="showTab('form')"><span>📝 Borang Tuntutan</span></button> <button class="tab" onclick="showTab('list')"><span>📋 Senarai Tuntutan</span></button> <button class="tab" onclick="showTab('rates')"><span>💰 Kadar Elaun 2025</span></button>
+   </div><!-- Tab 1: Borang Tuntutan -->
+   <div id="form-tab" class="tab-content active">
+    <form id="claimForm"><input type="hidden" name="action" value="add"> <input type="hidden" name="id" id="claimId">
+     <div class="form-grid"><!-- Maklumat Pemohon -->
+      <div class="form-section">
+       <h3>👤 Maklumat Pemohon</h3>
+       <div class="form-group"><label for="nama">Nama Penuh *</label> <input type="text" id="nama" name="nama" value="AHMAD HAFIZAN BIN ABD HALIM" required>
+       </div>
+       <div class="form-group"><label for="jawatan">Jawatan *</label> <input type="text" id="jawatan" name="jawatan" value="PEMBANTU HAL EHWAL ISLAM" required>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="gred">Gred *</label> <select id="gred" name="gred" required onchange="updateAllowanceRates()"> <option value="">Pilih Gred</option> <option value="JUSA C">JUSA C</option> <option value="JUSA B">JUSA B</option> <option value="JUSA A">JUSA A</option> <option value="54-56">Gred 54-56</option> <option value="52-53">Gred 52-53</option> <option value="48-51">Gred 48-51</option> <option value="44-47">Gred 44-47</option> <option value="41-43">Gred 41-43</option> <option value="38-40">Gred 38-40</option> <option value="32-37">Gred 32-37</option> <option value="29-31">Gred 29-31</option> <option value="27-28">Gred 27-28</option> <option value="22-26">Gred 22-26</option> <option value="17-21">Gred 17-21</option> <option value="11-16">Gred 11-16</option> <option value="1-10">Gred 1-10</option> <option value="S1" selected>S1</option> </select>
+        </div>
+        <div class="form-group"><label for="bahagian">Bahagian/Unit *</label> <input type="text" id="bahagian" name="bahagian" value="PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH" required>
+        </div>
+       </div>
+      </div><!-- Maklumat Perjalanan -->
+      <div class="form-section">
+       <h3>🚗 Maklumat Perjalanan</h3>
+       <div class="form-row">
+        <div class="form-group"><label for="tahun_tuntutan">Tahun Tuntutan *</label> <select id="tahun_tuntutan" name="tahun_tuntutan" required> <option value="2025">2025</option> <option value="2024">2024</option> </select>
+        </div>
+        <div class="form-group"><label for="bulan_tuntutan">Bulan Tuntutan *</label> <select id="bulan_tuntutan" name="bulan_tuntutan" required> <option value="">Pilih Bulan</option> <option value="Januari">Januari</option> <option value="Februari">Februari</option> <option value="Mac">Mac</option> <option value="April">April</option> <option value="Mei">Mei</option> <option value="Jun">Jun</option> <option value="Julai">Julai</option> <option value="Ogos">Ogos</option> <option value="September">September</option> <option value="Oktober">Oktober</option> <option value="November">November</option> <option value="Disember">Disember</option> </select>
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="tarikh_mula">Tarikh Mula *</label> <input type="date" id="tarikh_mula" name="tarikh_mula" required onchange="calculateDays()">
+        </div>
+        <div class="form-group"><label for="tarikh_tamat">Tarikh Tamat *</label> <input type="date" id="tarikh_tamat" name="tarikh_tamat" required onchange="calculateDays()">
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="masa_pergi">Masa Pergi *</label> <input type="text" id="masa_pergi" name="masa_pergi" required placeholder="Contoh: 8:00 AM" onchange="calculateArrivalTime()" oninput="formatTimeInput(this)">
+        </div>
+        <div class="form-group"><label for="tempoh_perjalanan">Tempoh Perjalanan (Jam:Minit) *</label> <input type="text" id="tempoh_perjalanan" name="tempoh_perjalanan" required placeholder="Contoh: 2:30" onchange="calculateArrivalTime()" oninput="formatDurationInput(this)">
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="masa_sampai">Masa Sampai (Auto)</label> <input type="text" id="masa_sampai" name="masa_sampai" readonly style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color: #4a5568;" placeholder="Akan dikira automatik">
+        </div>
+        <div class="form-group"><label for="masa_balik">Masa Balik</label> <input type="text" id="masa_balik" name="masa_balik" onchange="calculateReturnTime()" oninput="formatTimeInput(this)" placeholder="Contoh: 5:00 PM">
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="masa_tiba">Masa Tiba (Auto)</label> <input type="text" id="masa_tiba" name="masa_tiba" readonly style="background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%); color: #4a5568;" placeholder="Akan dikira automatik">
+        </div>
+        <div class="form-group"><!-- Empty for spacing -->
+        </div>
+       </div>
+      </div><!-- Destinasi -->
+      <div class="form-section">
+       <h3>📍 Destinasi &amp; Pengangkutan</h3>
+       <div class="form-group"><label for="tempat_asal">Tempat Asal *</label> <select id="tempat_asal" name="tempat_asal" required> <option value="">Pilih Tempat Asal</option> <option value="Pejabat" selected>Pejabat</option> <option value="Rumah">Rumah</option> </select>
+       </div>
+       <div class="form-group"><label for="destinasi">Destinasi *</label> <input type="text" id="destinasi" name="destinasi" required>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="jarak_sehala">Jarak Sehala (KM) *</label> <input type="number" id="jarak_sehala" name="jarak_sehala" step="0.1" required onchange="calculateRoundTripDistance()">
+        </div>
+        <div class="form-group"><label for="jarak_total">Jarak Pergi Balik (Auto)</label> <input type="number" id="jarak_total" name="jarak_total" step="0.1" readonly style="background: #f0f0f0;">
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="pengangkutan">Jenis Pengangkutan *</label> <select id="pengangkutan" name="pengangkutan" required onchange="calculateTransportCost()"> <option value="">Pilih Pengangkutan</option> <option value="Kereta Sendiri" selected>Kereta Sendiri</option> <option value="Kereta Jabatan">Kereta Jabatan</option> <option value="Bas">Bas</option> <option value="Kapal Terbang">Kapal Terbang</option> <option value="Kereta Api">Kereta Api</option> <option value="Teksi/Grab">Teksi/Grab</option> </select>
+        </div>
+        <div class="form-group"><label for="no_kenderaan">No. Kenderaan</label> <input type="text" id="no_kenderaan" name="no_kenderaan" value="PNP4264">
+        </div>
+       </div>
+      </div><!-- Maklumat Tol -->
+      <div class="form-section">
+       <h3>🛣️ Maklumat Bayaran Tol</h3>
+       <div class="form-row">
+        <div class="form-group"><label for="plaza_tol_masuk">Plaza Tol Masuk (Pergi)</label> <input type="text" id="plaza_tol_masuk" name="plaza_tol_masuk" placeholder="Contoh: Plaza Tol Juru">
+        </div>
+        <div class="form-group"><label for="plaza_tol_keluar">Plaza Tol Keluar (Pergi)</label> <input type="text" id="plaza_tol_keluar" name="plaza_tol_keluar" placeholder="Contoh: Plaza Tol Bukit Kayu Hitam">
+        </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group"><label for="tol_pergi">Bayaran Tol Pergi (RM)</label> <input type="number" id="tol_pergi" name="tol_pergi" step="0.01" value="0" onchange="calculateTotalToll()" placeholder="0.00">
+        </div>
+        <div class="form-group"><label for="tol_balik">Bayaran Tol Balik (RM)</label> <input type="number" id="tol_balik" name="tol_balik" step="0.01" value="0" onchange="calculateTotalToll()" placeholder="0.00">
+        </div>
+       </div>
+       <div class="form-group"><label for="catatan_tol">Catatan Tambahan Tol</label> <textarea id="catatan_tol" name="catatan_tol" placeholder="Contoh: Menggunakan Touch 'n Go, kadar tol kelas 1..." style="min-height: 60px;"></textarea>
+       </div>
+      </div><!-- Kategori & Tujuan -->
+      <div class="form-section">
+       <h3>📋 Kategori &amp; Tujuan</h3>
+       <div class="form-group"><label for="kategori_perjalanan">Kategori Perjalanan *</label> <select id="kategori_perjalanan" name="kategori_perjalanan" required> <option value="">Pilih Kategori</option> <option value="Dalam Negeri">Dalam Negeri</option> <option value="Luar Negeri">Luar Negeri</option> <option value="Harian">Harian</option> <option value="Bermalam">Bermalam</option> </select>
+       </div>
+       <div class="form-group"><label for="tujuan">Tujuan Perjalanan *</label> <textarea id="tujuan" name="tujuan" required placeholder="NYATAKAN TUJUAN PERJALANAN DENGAN TERPERINCI..." style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()"></textarea>
+       </div>
       </div>
-      <div><label for="jawatan" class="block text-sm font-medium text-gray-700 mb-2">Jawatan</label> <input type="text" id="jawatan" name="jawatan" required value="PEMBANTU HAL EHWAL ISLAM" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+     </div><!-- Pengiraan Kos -->
+     <div class="calculation-section">
+      <h3>💰 Pengiraan Kos &amp; Elaun</h3>
+      <div class="calculation-grid">
+       <div class="calc-item"><label>Kos Pengangkutan</label>
+        <div class="amount">
+         RM <span id="display_kos_pengangkutan">0.00</span>
+        </div><input type="hidden" id="kos_pengangkutan" name="kos_pengangkutan" value="0">
+       </div>
+       <div class="calc-item"><label>Kos Tol (Auto)</label>
+        <div class="amount">
+         RM <span id="display_kos_tol">0.00</span>
+        </div><input type="hidden" id="kos_tol" name="kos_tol" value="0">
+       </div>
+       <div class="calc-item"><label>Kos Penginapan</label>
+        <div class="amount">
+         RM <input type="number" id="kos_penginapan" name="kos_penginapan" step="0.01" value="0" onchange="calculateTotal()" style="background:transparent;border:none;color:white;font-size:1.3rem;font-weight:700;width:80px;text-align:center;">
+        </div>
+       </div>
+       <div class="calc-item"><label>Elaun Harian</label>
+        <div class="amount">
+         RM <input type="number" id="elaun_harian" name="elaun_harian" step="0.01" value="0" onchange="calculateTotal()" style="background:transparent;border:none;color:white;font-size:1.3rem;font-weight:700;width:80px;text-align:center;">
+        </div>
+       </div>
+       <div class="calc-item"><label>Elaun Penginapan</label>
+        <div class="amount">
+         RM <span id="display_elaun_penginapan">0.00</span>
+        </div><input type="hidden" id="elaun_penginapan" name="elaun_penginapan" value="0">
+       </div>
+       <div class="calc-item"><label>Kos Lain-lain</label>
+        <div class="amount">
+         RM <input type="number" id="kos_lain" name="kos_lain" step="0.01" value="0" onchange="calculateTotal()" style="background:transparent;border:none;color:white;font-size:1.3rem;font-weight:700;width:80px;text-align:center;">
+        </div>
+       </div>
       </div>
      </div>
-     <div class="grid md:grid-cols-2 gap-6">
-      <div><label for="gred" class="block text-sm font-medium text-gray-700 mb-2">Gred</label> <select id="gred" name="gred" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Gred</option> <option value="S1" data-elaun="0.85" selected>S1</option> <optgroup label="Kumpulan Pengurusan Tertinggi (JUSA)"> <option value="JUSA A" data-elaun="1.20">JUSA A</option> <option value="JUSA B" data-elaun="1.20">JUSA B</option> <option value="JUSA C" data-elaun="1.20">JUSA C</option> </optgroup> <optgroup label="Kumpulan Pengurusan &amp; Profesional"> <option value="54" data-elaun="1.20">Gred 54</option> <option value="52" data-elaun="1.20">Gred 52</option> <option value="48" data-elaun="1.20">Gred 48</option> <option value="44" data-elaun="1.20">Gred 44</option> <option value="41" data-elaun="1.20">Gred 41</option> </optgroup> <optgroup label="Kumpulan Pelaksana"> <option value="40" data-elaun="0.90">Gred 40</option> <option value="38" data-elaun="0.90">Gred 38</option> <option value="36" data-elaun="0.90">Gred 36</option> <option value="34" data-elaun="0.90">Gred 34</option> <option value="32" data-elaun="0.90">Gred 32</option> <option value="29" data-elaun="0.90">Gred 29</option> <option value="27" data-elaun="0.90">Gred 27</option> <option value="26" data-elaun="0.90">Gred 26</option> <option value="22" data-elaun="0.90">Gred 22</option> <option value="19" data-elaun="0.90">Gred 19</option> <option value="17" data-elaun="0.90">Gred 17</option> </optgroup> <optgroup label="Kumpulan Sokongan"> <option value="16" data-elaun="0.70">Gred 16</option> <option value="11" data-elaun="0.70">Gred 11</option> <option value="9" data-elaun="0.70">Gred 9</option> <option value="7" data-elaun="0.70">Gred 7</option> <option value="5" data-elaun="0.70">Gred 5</option> <option value="3" data-elaun="0.70">Gred 3</option> <option value="1" data-elaun="0.70">Gred 1</option> </optgroup> <optgroup label="Skim Perkhidmatan Pendidikan"> <option value="DG54" data-elaun="1.20">DG54 (Ketua Pengarah Pendidikan)</option> <option value="DG52" data-elaun="1.20">DG52 (Timbalan Ketua Pengarah)</option> <option value="DG48" data-elaun="1.20">DG48 (Pengarah Pendidikan)</option> <option value="DG44" data-elaun="1.20">DG44 (Timbalan Pengarah)</option> <option value="DG41" data-elaun="1.20">DG41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Perubatan"> <option value="UD54" data-elaun="1.20">UD54 (Ketua Pengarah Kesihatan)</option> <option value="UD52" data-elaun="1.20">UD52 (Timbalan Ketua Pengarah)</option> <option value="UD48" data-elaun="1.20">UD48 (Pengarah)</option> <option value="UD44" data-elaun="1.20">UD44 (Timbalan Pengarah)</option> <option value="UD41" data-elaun="1.20">UD41 (Penolong Pengarah)</option> </optgroup> <optgroup label="Skim Perkhidmatan Undang-undang"> <option value="LS54" data-elaun="1.20">LS54 (Peguam Negara)</option> <option value="LS52" data-elaun="1.20">LS52 (Timbalan Peguam Negara)</option> <option value="LS48" data-elaun="1.20">LS48 (Penolong Peguam Negara)</option> <option value="LS44" data-elaun="1.20">LS44 (Peguam Negara Kanan)</option> <option value="LS41" data-elaun="1.20">LS41 (Peguam Negara)</option> </optgroup> <optgroup label="Skim Perkhidmatan Kejuruteraan"> <option value="J54" data-elaun="1.20">J54 (Ketua Jurutera)</option> <option value="J48" data-elaun="1.20">J48 (Jurutera Kanan)</option> <option value="J44" data-elaun="1.20">J44 (Jurutera)</option> <option value="J41" data-elaun="1.20">J41 (Penolong Jurutera)</option> </optgroup> <optgroup label="Skim Perkhidmatan Guru"> <option value="DG48" data-elaun="1.20">DG48 (Guru Cemerlang)</option> <option value="DG44" data-elaun="1.20">DG44 (Guru Kanan)</option> <option value="DG41" data-elaun="1.20">DG41 (Guru)</option> <option value="DG29" data-elaun="0.90">DG29 (Guru Sandaran Tidak Terlatih)</option> </optgroup> <optgroup label="Skim Perkhidmatan Jururawat"> <option value="U44" data-elaun="1.20">U44 (Matron)</option> <option value="U41" data-elaun="1.20">U41 (Jururawat Kanan)</option> <option value="U32" data-elaun="0.90">U32 (Jururawat)</option> <option value="U29" data-elaun="0.90">U29 (Jururawat Muda)</option> </optgroup> </select>
-      </div>
-      <div><label for="bahagian" class="block text-sm font-medium text-gray-700 mb-2">Bahagian/Unit</label> <input type="text" id="bahagian" name="bahagian" required value="PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-      </div>
-     </div><!-- Travel Details -->
-     <div class="border-t pt-6">
-      <h3 class="text-lg font-semibold text-gray-800 mb-4">Butiran Perjalanan</h3><!-- Tahun dan Bulan Tuntutan -->
-      <div class="grid md:grid-cols-2 gap-6 mb-4">
-       <div><label for="tahun_tuntutan" class="block text-sm font-medium text-gray-700 mb-2">Tahun Tuntutan</label> <select id="tahun_tuntutan" name="tahun_tuntutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Tahun</option> <option value="2025" selected>2025</option> <option value="2026">2026</option> <option value="2027">2027</option> </select>
-       </div>
-       <div><label for="bulan_tuntutan" class="block text-sm font-medium text-gray-700 mb-2">Bulan Tuntutan</label> <select id="bulan_tuntutan" name="bulan_tuntutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Bulan</option> <option value="01">Januari</option> <option value="02">Februari</option> <option value="03">Mac</option> <option value="04">April</option> <option value="05">Mei</option> <option value="06">Jun</option> <option value="07">Julai</option> <option value="08">Ogos</option> <option value="09">September</option> <option value="10">Oktober</option> <option value="11">November</option> <option value="12">Disember</option> </select>
-       </div>
-      </div><!-- Tarikh dan Masa -->
-      <div class="grid md:grid-cols-2 gap-6 mb-4">
-       <div><label for="tarikh_mula" class="block text-sm font-medium text-gray-700 mb-2">Tarikh Mula Perjalanan</label> <input type="date" id="tarikh_mula" name="tarikh_mula" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="tarikh_tamat" class="block text-sm font-medium text-gray-700 mb-2">Tarikh Tamat Perjalanan</label> <input type="date" id="tarikh_tamat" name="tarikh_tamat" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-      </div><!-- Masa Perjalanan -->
-      <div class="grid md:grid-cols-5 gap-6 mb-4">
-       <div><label for="masa_pergi" class="block text-sm font-medium text-gray-700 mb-2">Masa Pergi</label> <input type="time" id="masa_pergi" name="masa_pergi" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="masa_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Tempoh Perjalanan</label>
-        <div class="flex space-x-2">
-         <div class="flex-1"><input type="number" id="jam_perjalanan" name="jam_perjalanan" min="0" max="23" placeholder="Jam" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <label class="text-xs text-gray-500">Jam</label>
-         </div>
-         <div class="flex-1"><input type="number" id="minit_perjalanan" name="minit_perjalanan" min="0" max="59" step="1" placeholder="Minit" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <label class="text-xs text-gray-500">Minit</label>
-         </div>
-        </div><input type="hidden" id="masa_perjalanan" name="masa_perjalanan">
-       </div>
-       <div><label for="masa_sampai" class="block text-sm font-medium text-gray-700 mb-2">Masa Sampai (Auto)</label> <input type="time" id="masa_sampai" name="masa_sampai" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="masa_balik" class="block text-sm font-medium text-gray-700 mb-2">Masa Balik</label> <input type="time" id="masa_balik" name="masa_balik" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="masa_tiba" class="block text-sm font-medium text-gray-700 mb-2">Masa Tiba (Auto)</label> <input type="time" id="masa_tiba" name="masa_tiba" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-      </div><!-- Tempat Perjalanan -->
-      <div class="grid md:grid-cols-2 gap-6 mb-4">
-       <div><label for="tempat_asal" class="block text-sm font-medium text-gray-700 mb-2">Tempat Asal</label> <input type="text" id="tempat_asal" name="tempat_asal" required placeholder="Contoh: Putrajaya" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="destinasi" class="block text-sm font-medium text-gray-700 mb-2">Destinasi/Tempat Tujuan</label> <input type="text" id="destinasi" name="destinasi" required placeholder="Contoh: Kuala Lumpur" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-      </div><!-- Jarak dan Pengangkutan -->
-      <div class="grid md:grid-cols-4 gap-6 mb-4">
-       <div><label for="jarak" class="block text-sm font-medium text-gray-700 mb-2">Jarak Perjalanan Sehala (KM)</label> <input type="number" id="jarak" name="jarak" step="0.1" min="0" placeholder="Contoh: 50 (akan dikira 100km pergi balik)" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p class="text-xs text-gray-500 mt-1">Sistem akan kira 2 hala (pergi &amp; balik)</p>
-       </div>
-       <div><label for="jumlah_jarak_terkumpul" class="block text-sm font-medium text-gray-700 mb-2">Jumlah KM Terkumpul</label> <input type="number" id="jumlah_jarak_terkumpul" name="jumlah_jarak_terkumpul" step="0.1" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p class="text-xs text-gray-500 mt-1">Untuk bulan semasa sahaja</p>
-       </div>
-       <div><label for="pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Jenis Pengangkutan</label> <select id="pengangkutan" name="pengangkutan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Pengangkutan</option> <option value="Kereta Sendiri">Kereta Sendiri</option> <option value="Kereta Jabatan">Kereta Jabatan</option> <option value="Bas Ekspres">Bas Ekspres</option> <option value="Kereta Api/ETS">Kereta Api/ETS</option> <option value="Kapal Terbang">Kapal Terbang</option> <option value="Teksi/E-Hailing">Teksi/E-Hailing</option> <option value="Kapal/Feri">Kapal/Feri</option> </select>
-       </div>
-       <div><label for="elaun_km" class="block text-sm font-medium text-gray-700 mb-2">Elaun Per KM (RM) - Kadar 2025</label> <input type="number" id="elaun_km" name="elaun_km" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <p class="text-xs text-gray-500 mt-1">500KM pertama: RM0.85<br>
-         501KM+: RM0.75<br>
-         (Dikira 2 hala)</p>
-       </div>
-      </div>
-      <div class="grid md:grid-cols-2 gap-6 mb-4">
-       <div><label for="no_kenderaan" class="block text-sm font-medium text-gray-700 mb-2">No. Pendaftaran Kenderaan</label> <input type="text" id="no_kenderaan" name="no_kenderaan" value="PNP4264" placeholder="Contoh: ABC 1234" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="kos_pengangkutan_auto" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (Auto) (RM)</label> <input type="number" id="kos_pengangkutan_auto" name="kos_pengangkutan_auto" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-      </div><!-- Tujuan dan Kategori -->
-      <div class="grid md:grid-cols-3 gap-6 mb-4">
-       <div><label for="kategori_perjalanan" class="block text-sm font-medium text-gray-700 mb-2">Kategori Perjalanan</label> <select id="kategori_perjalanan" name="kategori_perjalanan" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kategori</option> <option value="Tugas Rasmi">Tugas Rasmi</option> <option value="Kursus/Latihan">Kursus/Latihan</option> <option value="Mesyuarat">Mesyuarat</option> <option value="Seminar/Persidangan">Seminar/Persidangan</option> <option value="Lawatan Kerja">Lawatan Kerja</option> <option value="Audit/Pemeriksaan">Audit/Pemeriksaan</option> <option value="Lain-lain">Lain-lain</option> </select>
-       </div>
-       <div><label for="bilangan_hari" class="block text-sm font-medium text-gray-700 mb-2">Bilangan Hari</label> <input type="number" id="bilangan_hari" name="bilangan_hari" min="1" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label for="no_kebenaran" class="block text-sm font-medium text-gray-700 mb-2">No. Kebenaran Perjalanan</label> <input type="text" id="no_kebenaran" name="no_kebenaran" placeholder="Contoh: KP/2025/001" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-      </div><!-- Elaun Harian -->
-      <div class="grid md:grid-cols-3 gap-6 mb-4">
-       <div><label for="kadar_elaun_harian" class="block text-sm font-medium text-gray-700 mb-2">Kadar Elaun Harian (RM) - Kadar 2025</label> <select id="kadar_elaun_harian" name="kadar_elaun_harian" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kadar</option> <option value="180">RM 180 (JUSA/Gred 54-48)</option> <option value="160">RM 160 (Gred 44-41)</option> <option value="140">RM 140 (Gred 40-32)</option> <option value="120">RM 120 (Gred 29-22)</option> <option value="100">RM 100 (Gred 19-11)</option> <option value="90">RM 90 (Gred 9 ke bawah)</option> </select>
-       </div>
-       <div><label for="elaun_harian" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Elaun Harian (RM)</label> <input type="number" id="elaun_harian" name="elaun_harian" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-       </div>
-       <div><label class="block text-sm font-medium text-gray-700 mb-2">Panduan Kadar 2025</label>
-        <div class="text-xs text-gray-600 p-2 bg-blue-50 rounded">
-         <p><strong>RM 180:</strong> JUSA, Gred 54-48</p>
-         <p><strong>RM 160:</strong> Gred 44-41</p>
-         <p><strong>RM 140:</strong> Gred 40-32</p>
-         <p><strong>RM 120:</strong> Gred 29-22</p>
-         <p><strong>RM 100:</strong> Gred 19-11</p>
-         <p><strong>RM 90:</strong> Gred 9 ke bawah</p>
-        </div>
-       </div>
-      </div><!-- Tujuan Perjalanan -->
-      <div class="mb-4"><label for="tujuan" class="block text-sm font-medium text-gray-700 mb-2">Tujuan Perjalanan (Terperinci)</label> <textarea id="tujuan" name="tujuan" rows="3" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Nyatakan tujuan perjalanan secara terperinci termasuk aktiviti yang akan dijalankan"></textarea>
-      </div><!-- Kos Perjalanan -->
-      <div class="border-t pt-4">
-       <h4 class="text-md font-semibold text-gray-800 mb-3">Pecahan Kos Tuntutan (Kadar 2025)</h4>
-       <div class="grid md:grid-cols-3 gap-6">
-        <div><label for="kos_pengangkutan" class="block text-sm font-medium text-gray-700 mb-2">Kos Pengangkutan (RM)</label> <input type="number" id="kos_pengangkutan" name="kos_pengangkutan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div><label for="kos_tol" class="block text-sm font-medium text-gray-700 mb-2">Kos Tol Pergi &amp; Balik (RM)</label> <input type="number" id="kos_tol" name="kos_tol" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div><label for="kos_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Kos Penginapan (RM)</label> <input type="number" id="kos_penginapan" name="kos_penginapan" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-       </div><!-- Elaun Penginapan Mengikut Kadar 2025 -->
-       <div class="grid md:grid-cols-3 gap-6 mt-4">
-        <div><label for="kadar_elaun_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Kadar Elaun Penginapan (RM/malam)</label> <select id="kadar_elaun_penginapan" name="kadar_elaun_penginapan" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"> <option value="">Pilih Kadar</option> <option value="300">RM 300 (JUSA/Gred 54-48)</option> <option value="250">RM 250 (Gred 44-41)</option> <option value="200">RM 200 (Gred 40-32)</option> <option value="150">RM 150 (Gred 29-22)</option> <option value="120">RM 120 (Gred 19-11)</option> <option value="100">RM 100 (Gred 9 ke bawah)</option> </select>
-        </div>
-        <div><label for="bilangan_malam" class="block text-sm font-medium text-gray-700 mb-2">Bilangan Malam</label> <input type="number" id="bilangan_malam" name="bilangan_malam" min="0" step="1" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div><label for="elaun_penginapan" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Elaun Penginapan (RM)</label> <input type="number" id="elaun_penginapan" name="elaun_penginapan" step="0.01" min="0" readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-       </div>
-       <div class="grid md:grid-cols-2 gap-6 mt-4">
-        <div><label for="kos_lain" class="block text-sm font-medium text-gray-700 mb-2">Kos Lain-lain (RM)</label> <input type="number" id="kos_lain" name="kos_lain" step="0.01" min="0" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div><label for="jumlah_keseluruhan" class="block text-sm font-medium text-gray-700 mb-2">Jumlah Keseluruhan (RM)</label> <input type="number" id="jumlah_keseluruhan" name="jumlah_keseluruhan" step="0.01" min="0" required readonly class="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        </div>
-       </div>
-      </div>
-     </div><!-- Submit Button -->
-     <div class="flex justify-end pt-6 border-t"><button type="submit" id="submit-btn" class="bg-green-600 hover:bg-green-700 text-white px-8 py-3 rounded-md font-medium transition-colors shadow-md"> <span id="submit-text">Hantar Permohonan</span> <span id="submit-loading" class="hidden">Menghantar...</span> </button>
+     <div class="total-section">
+      <h4>Jumlah Keseluruhan Tuntutan</h4>
+      <p class="total-amount">RM <span id="display_jumlah_keseluruhan">0.00</span></p><input type="hidden" id="jumlah_keseluruhan" name="jumlah_keseluruhan" value="0">
+     </div>
+     <div class="error-message" id="errorMessage"></div>
+     <div class="success-message" id="successMessage"></div><button type="submit" class="submit-btn" id="submitBtn"> 📤 Hantar Permohonan Tuntutan </button>
+     <div class="loading" id="loading">
+      <p>⏳ Sedang menghantar permohonan...</p>
      </div>
     </form>
-   </section><!-- List Section -->
-   <section id="list-section" class="hidden bg-white rounded-lg shadow-lg p-6">
-    <div class="flex justify-between items-center mb-6 border-b pb-2">
-     <h2 class="text-xl font-bold text-gray-800">Senarai Tuntutan</h2>
-     <div class="flex items-center space-x-4"><button id="refresh-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🔄</span> <span>Muat Semula</span> </button> <button id="print-btn" onclick="printClaimsList()" class="no-print bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium transition-colors shadow-md flex items-center space-x-2"> <span>🖨️</span> <span>Cetak Senarai</span> </button>
-      <div class="text-sm text-gray-600">
-       Jumlah: <span id="total-count" class="font-semibold">0</span> permohonan
-      </div>
-     </div>
+   </div><!-- Tab 2: Senarai Tuntutan -->
+   <div id="list-tab" class="tab-content">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+     <h2>📋 Senarai Tuntutan</h2><button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); transition: all 0.3s ease;"> 🔄 Muat Semula </button>
     </div>
-    <div id="claims-list" class="space-y-4">
-     <div id="empty-state" class="text-center py-12 text-gray-500">
-      <div class="text-6xl mb-4">
-       📋
-      </div>
-      <p class="text-lg">Tiada tuntutan dihantar lagi</p>
-      <p class="text-sm">Klik tab "Borang Tuntutan" untuk memulakan permohonan</p>
-     </div>
+    <div id="claimsContainer">
+     <p style="text-align: center; color: #666; padding: 40px;">Klik "Muat Semula" untuk melihat senarai tuntutan</p>
     </div>
-   </section><!-- Footer -->
-   <footer class="text-center mt-8 text-gray-600">
-    <p id="footer-text" class="text-sm">© 2025 Kerajaan Malaysia. Sistem Tuntutan Perjalanan Dalam Negeri</p>
+   </div><!-- Tab 3: Kadar Elaun -->
+   <div id="rates-tab" class="tab-content">
+    <h2>💰 Kadar Elaun 2025</h2>
+    <div class="form-section">
+     <h3>🚗 Elaun Kenderaan 2025 (Sistem Berperingkat)</h3>
+     <div style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); padding: 18px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #667eea;">
+      <h4 style="color: #2c3e50; margin: 0 0 10px 0;">📋 Kadar Terkini:</h4>
+      <p style="color: #2c3e50; margin: 0; font-weight: 600;">• 500KM Pertama: <strong>RM 0.85 per KM</strong><br>
+        • 501KM dan seterusnya: <strong>RM 0.75 per KM</strong></p>
+     </div>
+     <table class="claims-table">
+      <thead>
+       <tr>
+        <th>Jarak</th>
+        <th>Kadar (RM/KM)</th>
+        <th>Contoh Pengiraan</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>1 - 500 KM</td>
+        <td>RM 0.85</td>
+        <td>300KM = RM 255.00</td>
+       </tr>
+       <tr>
+        <td>501 KM ke atas</td>
+        <td>RM 0.75</td>
+        <td>600KM = (500×0.85) + (100×0.75) = RM 500.00</td>
+       </tr>
+       <tr>
+        <td colspan="3" style="background: #f7fafc; font-style: italic; text-align: center;">Sistem ini terpakai untuk semua gred</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="form-section" style="margin-top: 30px;">
+     <h3>🍽️ Elaun Harian</h3>
+     <table class="claims-table">
+      <thead>
+       <tr>
+        <th>Gred</th>
+        <th>Dalam Negeri (RM/Hari)</th>
+        <th>Luar Negeri (RM/Hari)</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>JUSA C &amp; ke atas</td>
+        <td>RM 120</td>
+        <td>RM 200</td>
+       </tr>
+       <tr>
+        <td>Gred 54-56</td>
+        <td>RM 100</td>
+        <td>RM 180</td>
+       </tr>
+       <tr>
+        <td>Gred 48-53</td>
+        <td>RM 90</td>
+        <td>RM 160</td>
+       </tr>
+       <tr>
+        <td>Gred 41-47</td>
+        <td>RM 80</td>
+        <td>RM 140</td>
+       </tr>
+       <tr>
+        <td>Gred 32-40</td>
+        <td>RM 70</td>
+        <td>RM 120</td>
+       </tr>
+       <tr>
+        <td>Gred 22-31</td>
+        <td>RM 60</td>
+        <td>RM 100</td>
+       </tr>
+       <tr>
+        <td>Gred 11-21</td>
+        <td>RM 50</td>
+        <td>RM 80</td>
+       </tr>
+       <tr>
+        <td>Gred 1-10</td>
+        <td>RM 40</td>
+        <td>RM 60</td>
+       </tr>
+       <tr>
+        <td>S1</td>
+        <td>RM 120</td>
+        <td>RM 200</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="form-section" style="margin-top: 30px;">
+     <h3>🏨 Elaun Penginapan (Per Malam)</h3>
+     <table class="claims-table">
+      <thead>
+       <tr>
+        <th>Gred</th>
+        <th>Dalam Negeri (RM/Malam)</th>
+        <th>Luar Negeri (RM/Malam)</th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>JUSA C &amp; ke atas</td>
+        <td>RM 300</td>
+        <td>RM 500</td>
+       </tr>
+       <tr>
+        <td>Gred 54-56</td>
+        <td>RM 250</td>
+        <td>RM 450</td>
+       </tr>
+       <tr>
+        <td>Gred 48-53</td>
+        <td>RM 200</td>
+        <td>RM 400</td>
+       </tr>
+       <tr>
+        <td>Gred 41-47</td>
+        <td>RM 180</td>
+        <td>RM 350</td>
+       </tr>
+       <tr>
+        <td>Gred 32-40</td>
+        <td>RM 150</td>
+        <td>RM 300</td>
+       </tr>
+       <tr>
+        <td>Gred 22-31</td>
+        <td>RM 120</td>
+        <td>RM 250</td>
+       </tr>
+       <tr>
+        <td>Gred 11-21</td>
+        <td>RM 100</td>
+        <td>RM 200</td>
+       </tr>
+       <tr>
+        <td>Gred 1-10</td>
+        <td>RM 80</td>
+        <td>RM 150</td>
+       </tr>
+       <tr>
+        <td>S1</td>
+        <td>RM 300</td>
+        <td>RM 500</td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+   </div>
+   <footer class="footer">
+    <p id="footer-text">© 2025 JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG</p>
    </footer>
   </div>
   <script>
-        // Configuration
-        let googleScriptUrl = 'https://script.google.com/macros/s/AKfycbwxLb0HLEQDO4bdj_zd7Yi3JF6PMkPbUEM8SJb6A6YteYQZOy-ZRcJub_lN8MR1TYWO/exec';
-        let currentData = [];
+        // Configuration object for editable elements
+        const defaultConfig = {
+            system_title: "SISTEM TUNTUTAN PERJALANAN",
+            department_name: "JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG", 
+            footer_text: "© 2025 JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG"
+        };
 
-        // Load data from Google Sheets using JSONP
-        async function loadFromGoogleSheets() {
-            if (!googleScriptUrl || googleScriptUrl.trim() === '') {
-                console.log('No Google Script URL configured');
-                return [];
+        // Google Apps Script URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGqUcHjbjES5J96aTz-SZ-mKYQeOGUWg0kLaQKotNy_FKtsaZozO2oYw6pz0b6d_0Y/exec';
+
+        // Allowance rates for 2025
+        const allowanceRates = {
+            transport: {
+                'JUSA C': 0.85, 'JUSA B': 0.85, 'JUSA A': 0.85,
+                '54-56': 0.80, '52-53': 0.75, '48-51': 0.75,
+                '44-47': 0.70, '41-43': 0.70, '38-40': 0.65,
+                '32-37': 0.65, '29-31': 0.60, '27-28': 0.60,
+                '22-26': 0.60, '17-21': 0.55, '11-16': 0.55,
+                '1-10': 0.50, 'S1': 0.85
+            },
+            daily: {
+                domestic: {
+                    'JUSA C': 120, 'JUSA B': 120, 'JUSA A': 120,
+                    '54-56': 100, '52-53': 90, '48-51': 90,
+                    '44-47': 80, '41-43': 80, '38-40': 70,
+                    '32-37': 70, '29-31': 60, '27-28': 60,
+                    '22-26': 60, '17-21': 50, '11-16': 50,
+                    '1-10': 40, 'S1': 120
+                },
+                overseas: {
+                    'JUSA C': 200, 'JUSA B': 200, 'JUSA A': 200,
+                    '54-56': 180, '52-53': 160, '48-51': 160,
+                    '44-47': 140, '41-43': 140, '38-40': 120,
+                    '32-37': 120, '29-31': 100, '27-28': 100,
+                    '22-26': 100, '17-21': 80, '11-16': 80,
+                    '1-10': 60, 'S1': 200
+                }
+            },
+            accommodation: {
+                domestic: {
+                    'JUSA C': 300, 'JUSA B': 300, 'JUSA A': 300,
+                    '54-56': 250, '52-53': 200, '48-51': 200,
+                    '44-47': 180, '41-43': 180, '38-40': 150,
+                    '32-37': 150, '29-31': 120, '27-28': 120,
+                    '22-26': 120, '17-21': 100, '11-16': 100,
+                    '1-10': 80, 'S1': 300
+                },
+                overseas: {
+                    'JUSA C': 500, 'JUSA B': 500, 'JUSA A': 500,
+                    '54-56': 450, '52-53': 400, '48-51': 400,
+                    '44-47': 350, '41-43': 350, '38-40': 300,
+                    '32-37': 300, '29-31': 250, '27-28': 250,
+                    '22-26': 250, '17-21': 200, '11-16': 200,
+                    '1-10': 150, 'S1': 500
+                }
             }
+        };
 
-            try {
-                console.log('Loading data from Google Sheets:', googleScriptUrl);
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', function() {
+            // Generate unique ID for new claim
+            document.getElementById('claimId').value = 'TC' + Date.now();
+            
+            // Set default year and month
+            const currentDate = new Date();
+            document.getElementById('tahun_tuntutan').value = currentDate.getFullYear();
+            document.getElementById('bulan_tuntutan').value = getMonthName(currentDate.getMonth());
+            
+            // Initialize form handlers
+            document.getElementById('claimForm').addEventListener('submit', handleSubmit);
+            
+            // Initialize SDK if available
+            if (window.elementSdk) {
+                initializeElementSdk();
+            }
+        });
+
+        // Element SDK initialization
+        function initializeElementSdk() {
+            window.elementSdk.init({
+                defaultConfig: defaultConfig,
+                onConfigChange: async (config) => {
+                    document.getElementById('system-title').textContent = config.system_title || defaultConfig.system_title;
+                    document.getElementById('department-name').textContent = config.department_name || defaultConfig.department_name;
+                    document.getElementById('footer-text').textContent = config.footer_text || defaultConfig.footer_text;
+                },
+                mapToCapabilities: (config) => ({
+                    recolorables: [],
+                    borderables: [],
+                    fontEditable: undefined,
+                    fontSizeable: undefined
+                }),
+                mapToEditPanelValues: (config) => new Map([
+                    ["system_title", config.system_title || defaultConfig.system_title],
+                    ["department_name", config.department_name || defaultConfig.department_name],
+                    ["footer_text", config.footer_text || defaultConfig.footer_text]
+                ])
+            });
+        }
+
+        // Tab management
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+            
+            // Load claims if list tab is selected
+            if (tabName === 'list') {
+                loadClaims();
+            }
+        }
+
+        // Calculate days between dates
+        function calculateDays() {
+            const startDate = document.getElementById('tarikh_mula').value;
+            const endDate = document.getElementById('tarikh_tamat').value;
+            
+            if (startDate && endDate) {
+                calculateAllowances();
+            }
+        }
+
+        // Update allowance rates based on grade
+        function updateAllowanceRates() {
+            calculateTransportCost();
+            calculateAllowances();
+        }
+
+        // Convert 12-hour to 24-hour format for calculations
+        function convertTo24Hour(timeStr) {
+            if (!timeStr) return null;
+            
+            // Clean and normalize the input
+            timeStr = timeStr.trim().toUpperCase();
+            
+            // Handle different formats: "8:00 AM", "8AM", "8:00AM", "08:00 AM"
+            let match = timeStr.match(/^(\d{1,2}):?(\d{0,2})\s*(AM|PM)$/);
+            if (!match) return null;
+            
+            let hour = parseInt(match[1]);
+            let minute = match[2] ? parseInt(match[2]) : 0;
+            const ampm = match[3];
+            
+            // Validate hour and minute
+            if (hour < 1 || hour > 12 || minute < 0 || minute > 59) return null;
+            
+            let hour24 = hour;
+            if (ampm === 'AM' && hour === 12) {
+                hour24 = 0;
+            } else if (ampm === 'PM' && hour !== 12) {
+                hour24 = hour + 12;
+            }
+            
+            return { hour: hour24, minute: minute };
+        }
+
+        // Convert 24-hour to 12-hour format for display
+        function convertTo12Hour(hour24, minute) {
+            let hour12 = hour24;
+            let ampm = 'AM';
+            
+            if (hour24 === 0) {
+                hour12 = 12;
+            } else if (hour24 === 12) {
+                ampm = 'PM';
+            } else if (hour24 > 12) {
+                hour12 = hour24 - 12;
+                ampm = 'PM';
+            }
+            
+            return `${hour12}:${minute.toString().padStart(2, '0')} ${ampm}`;
+        }
+
+        // Calculate arrival time
+        function calculateArrivalTime() {
+            const masaPergi = document.getElementById('masa_pergi').value;
+            const tempohPerjalanan = document.getElementById('tempoh_perjalanan').value;
+            
+            if (masaPergi && tempohPerjalanan) {
+                const pergiTime = convertTo24Hour(masaPergi);
                 
-                return new Promise((resolve, reject) => {
-                    const callbackName = 'jsonp_callback_' + Math.round(100000 * Math.random());
+                // Parse duration (handle formats like "2:30", "2", "2:0")
+                const durationParts = tempohPerjalanan.split(':');
+                const tempohHour = parseInt(durationParts[0]) || 0;
+                const tempohMin = parseInt(durationParts[1]) || 0;
+                
+                if (pergiTime && !isNaN(tempohHour)) {
+                    const pergiDate = new Date();
+                    pergiDate.setHours(pergiTime.hour, pergiTime.minute, 0, 0);
                     
-                    const script = document.createElement('script');
-                    const url = `${googleScriptUrl}?action=get&callback=${callbackName}`;
+                    const tempohMs = (tempohHour * 60 + tempohMin) * 60 * 1000;
+                    const sampaiDate = new Date(pergiDate.getTime() + tempohMs);
                     
-                    window[callbackName] = function(data) {
-                        delete window[callbackName];
-                        document.body.removeChild(script);
-                        
-                        if (data && data.success) {
-                            resolve(data.data || []);
-                        } else {
-                            console.warn('Google Sheets returned error:', data?.error);
-                            resolve([]);
-                        }
-                    };
+                    const sampaiTimeStr = convertTo12Hour(sampaiDate.getHours(), sampaiDate.getMinutes());
+                    document.getElementById('masa_sampai').value = sampaiTimeStr;
+                }
+            }
+        }
+
+        // Calculate return time
+        function calculateReturnTime() {
+            const masaBalik = document.getElementById('masa_balik').value;
+            const tempohPerjalanan = document.getElementById('tempoh_perjalanan').value;
+            
+            if (masaBalik && tempohPerjalanan) {
+                const balikTime = convertTo24Hour(masaBalik);
+                
+                // Parse duration (handle formats like "2:30", "2", "2:0")
+                const durationParts = tempohPerjalanan.split(':');
+                const tempohHour = parseInt(durationParts[0]) || 0;
+                const tempohMin = parseInt(durationParts[1]) || 0;
+                
+                if (balikTime && !isNaN(tempohHour)) {
+                    const balikDate = new Date();
+                    balikDate.setHours(balikTime.hour, balikTime.minute, 0, 0);
                     
-                    script.onerror = function() {
-                        delete window[callbackName];
-                        document.body.removeChild(script);
-                        console.warn('Error loading data from Google Sheets');
-                        resolve([]);
-                    };
+                    const tempohMs = (tempohHour * 60 + tempohMin) * 60 * 1000;
+                    const tibaDate = new Date(balikDate.getTime() + tempohMs);
                     
-                    script.src = url;
-                    document.body.appendChild(script);
-                    
-                    setTimeout(() => {
-                        if (window[callbackName]) {
-                            delete window[callbackName];
-                            if (document.body.contains(script)) {
-                                document.body.removeChild(script);
-                            }
-                            console.warn('Timeout loading data from Google Sheets');
-                            resolve([]);
-                        }
-                    }, 10000);
+                    const tibaTimeStr = convertTo12Hour(tibaDate.getHours(), tibaDate.getMinutes());
+                    document.getElementById('masa_tiba').value = tibaTimeStr;
+                }
+            }
+        }
+
+        // Calculate round trip distance
+        function calculateRoundTripDistance() {
+            const jarakSehala = parseFloat(document.getElementById('jarak_sehala').value) || 0;
+            const jarakTotal = jarakSehala * 2;
+            
+            document.getElementById('jarak_total').value = jarakTotal.toFixed(1);
+            calculateTransportCost();
+        }
+
+        // Calculate total toll
+        function calculateTotalToll() {
+            const tolPergi = parseFloat(document.getElementById('tol_pergi').value) || 0;
+            const tolBalik = parseFloat(document.getElementById('tol_balik').value) || 0;
+            const totalTol = tolPergi + tolBalik;
+            
+            document.getElementById('kos_tol').value = totalTol.toFixed(2);
+            document.getElementById('display_kos_tol').textContent = totalTol.toFixed(2);
+            
+            calculateTotal();
+        }
+
+        // Calculate transport cost with new tiered system
+        function calculateTransportCost() {
+            const gred = document.getElementById('gred').value;
+            const jarakTotal = parseFloat(document.getElementById('jarak_total').value) || 0;
+            const pengangkutan = document.getElementById('pengangkutan').value;
+            
+            let cost = 0;
+            
+            if (pengangkutan === 'Kereta Sendiri' && gred && allowanceRates.transport[gred]) {
+                // New tiered system: First 500km at RM0.85, 501km onwards at RM0.75
+                if (jarakTotal <= 500) {
+                    cost = jarakTotal * 0.85;
+                } else {
+                    cost = (500 * 0.85) + ((jarakTotal - 500) * 0.75);
+                }
+            }
+            
+            document.getElementById('kos_pengangkutan').value = cost.toFixed(2);
+            document.getElementById('display_kos_pengangkutan').textContent = cost.toFixed(2);
+            
+            calculateTotal();
+        }
+
+        // Calculate allowances (only accommodation allowance is auto-calculated)
+        function calculateAllowances() {
+            const gred = document.getElementById('gred').value;
+            const kategori = document.getElementById('kategori_perjalanan').value;
+            const startDate = document.getElementById('tarikh_mula').value;
+            const endDate = document.getElementById('tarikh_tamat').value;
+            
+            let accommodationAllowance = 0;
+            
+            if (gred && startDate && endDate && allowanceRates.accommodation.domestic[gred]) {
+                // Calculate nights automatically
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const bilangan_hari = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                const bilangan_malam = Math.max(0, bilangan_hari - 1);
+                
+                // Determine if domestic or overseas
+                const isDomestic = kategori === 'Dalam Negeri' || kategori === 'Harian' || kategori === 'Bermalam';
+                
+                if (isDomestic) {
+                    accommodationAllowance = bilangan_malam * allowanceRates.accommodation.domestic[gred];
+                } else {
+                    accommodationAllowance = bilangan_malam * allowanceRates.accommodation.overseas[gred];
+                }
+            }
+            
+            document.getElementById('elaun_penginapan').value = accommodationAllowance.toFixed(2);
+            document.getElementById('display_elaun_penginapan').textContent = accommodationAllowance.toFixed(2);
+            
+            calculateTotal();
+        }
+
+        // Calculate total amount
+        function calculateTotal() {
+            const kosTransport = parseFloat(document.getElementById('kos_pengangkutan').value) || 0;
+            const kosTol = parseFloat(document.getElementById('kos_tol').value) || 0;
+            const kosPenginapan = parseFloat(document.getElementById('kos_penginapan').value) || 0;
+            const elaunHarian = parseFloat(document.getElementById('elaun_harian').value) || 0;
+            const elaunPenginapan = parseFloat(document.getElementById('elaun_penginapan').value) || 0;
+            const kosLain = parseFloat(document.getElementById('kos_lain').value) || 0;
+            
+            const total = kosTransport + kosTol + kosPenginapan + elaunHarian + elaunPenginapan + kosLain;
+            
+            document.getElementById('jumlah_keseluruhan').value = total.toFixed(2);
+            document.getElementById('display_jumlah_keseluruhan').textContent = total.toFixed(2);
+        }
+
+        // Handle form submission
+        async function handleSubmit(event) {
+            event.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Hide previous messages
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            loading.classList.add('show');
+            
+            try {
+                const formData = new FormData(document.getElementById('claimForm'));
+                
+                // Submit to Google Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
                 });
-
-            } catch (error) {
-                console.error('Error loading from Google Sheets:', error);
-                return [];
-            }
-        }
-
-        // Load data
-        async function loadData() {
-            try {
-                if (googleScriptUrl) {
-                    const sheetsData = await loadFromGoogleSheets();
-                    currentData = sheetsData || [];
-                    updateClaimsList(currentData);
-                    updateTotalCount(currentData.length);
-                } else {
-                    currentData = [];
-                    updateClaimsList(currentData);
-                    updateTotalCount(0);
-                    showNotification('Google Apps Script URL belum dikonfigurasi', 'error');
-                }
-            } catch (error) {
-                console.error('Error loading data:', error);
-                currentData = [];
-                updateClaimsList(currentData);
-                updateTotalCount(0);
-                showNotification('Ralat memuat data dari Google Sheets', 'error');
-            }
-        }
-
-        // Tab switching
-        function setupTabs() {
-            const tabForm = document.getElementById('tab-form');
-            const tabList = document.getElementById('tab-list');
-            const formSection = document.getElementById('form-section');
-            const listSection = document.getElementById('list-section');
-
-            tabForm.addEventListener('click', () => {
-                tabForm.classList.add('bg-blue-600', 'text-white');
-                tabForm.classList.remove('text-gray-600', 'hover:bg-gray-100');
-                tabList.classList.remove('bg-blue-600', 'text-white');
-                tabList.classList.add('text-gray-600', 'hover:bg-gray-100');
                 
-                formSection.classList.remove('hidden');
-                listSection.classList.add('hidden');
-            });
-
-            tabList.addEventListener('click', () => {
-                tabList.classList.add('bg-blue-600', 'text-white');
-                tabList.classList.remove('text-gray-600', 'hover:bg-gray-100');
-                tabForm.classList.remove('bg-blue-600', 'text-white');
-                tabForm.classList.add('text-gray-600', 'hover:bg-gray-100');
-                
-                listSection.classList.remove('hidden');
-                formSection.classList.add('hidden');
-                
-                loadData();
-            });
-        }
-
-        // Auto calculate total cost and mileage allowance
-        function setupCostCalculation() {
-            const kosInputs = ['kos_pengangkutan', 'kos_penginapan', 'kos_lain', 'kos_tol', 'elaun_harian', 'kos_pengangkutan_auto', 'elaun_penginapan'];
-            const jumlahInput = document.getElementById('jumlah_keseluruhan');
-            const gradSelect = document.getElementById('gred');
-            const jarakInput = document.getElementById('jarak');
-            const elaunKmInput = document.getElementById('elaun_km');
-            const kosPengangkutanAutoInput = document.getElementById('kos_pengangkutan_auto');
-            const bilanganHariInput = document.getElementById('bilangan_hari');
-            const kadarElaunHarianSelect = document.getElementById('kadar_elaun_harian');
-            const elaunHarianInput = document.getElementById('elaun_harian');
-            const kadarElaunPenginapanSelect = document.getElementById('kadar_elaun_penginapan');
-            const bilanganMalamInput = document.getElementById('bilangan_malam');
-            const elaunPenginapanInput = document.getElementById('elaun_penginapan');
-            
-            // Time calculation elements
-            const masaPergiInput = document.getElementById('masa_pergi');
-            const jamPerjalananInput = document.getElementById('jam_perjalanan');
-            const minitPerjalananInput = document.getElementById('minit_perjalanan');
-            const masaPerjalananInput = document.getElementById('masa_perjalanan');
-            const masaSampaiInput = document.getElementById('masa_sampai');
-            const masaBalikInput = document.getElementById('masa_balik');
-            const masaTibaInput = document.getElementById('masa_tiba');
-
-            // Setup event listeners
-            kosInputs.forEach(inputId => {
-                const input = document.getElementById(inputId);
-                if (input) {
-                    input.addEventListener('input', calculateTotal);
-                }
-            });
-
-            gradSelect.addEventListener('change', updateMileageRate);
-            jarakInput.addEventListener('input', calculateMileageAllowance);
-            bilanganHariInput.addEventListener('input', calculateDailyAllowance);
-            kadarElaunHarianSelect.addEventListener('change', calculateDailyAllowance);
-            bilanganMalamInput.addEventListener('input', calculateAccommodationAllowance);
-            kadarElaunPenginapanSelect.addEventListener('change', calculateAccommodationAllowance);
-            
-            // Time calculation listeners
-            masaPergiInput.addEventListener('change', calculateArrivalTime);
-            jamPerjalananInput.addEventListener('input', updateTravelDuration);
-            minitPerjalananInput.addEventListener('input', updateTravelDuration);
-            masaBalikInput.addEventListener('change', calculateReturnTime);
-
-            function updateMileageRate() {
-                const selectedOption = gradSelect.options[gradSelect.selectedIndex];
-                const elaunRate = selectedOption.getAttribute('data-elaun');
-                
-                if (elaunRate) {
-                    elaunKmInput.value = elaunRate;
-                    calculateMileageAllowance();
-                } else {
-                    elaunKmInput.value = '';
-                    kosPengangkutanAutoInput.value = '';
+                if (response.ok) {
+                    // Open success page in new tab
+                    const newWindow = window.open('', '_blank');
+                    const responseText = await response.text();
+                    newWindow.document.write(responseText);
+                    
+                    // Show success message
+                    successMessage.textContent = '✅ Permohonan berjaya dihantar! Tab baru akan terbuka dengan butiran.';
+                    successMessage.style.display = 'block';
+                    
+                    // Reset form
+                    document.getElementById('claimForm').reset();
+                    document.getElementById('claimId').value = 'TC' + Date.now();
                     calculateTotal();
-                }
-            }
-
-            function calculateMileageAllowance() {
-                const jarak = parseFloat(jarakInput.value) || 0;
-                
-                if (jarak > 0) {
-                    const totalJarak = jarak * 2;
-                    let totalAllowance = 0;
                     
-                    if (totalJarak <= 500) {
-                        totalAllowance = totalJarak * 0.85;
-                    } else {
-                        totalAllowance = (500 * 0.85) + ((totalJarak - 500) * 0.75);
-                    }
-                    
-                    kosPengangkutanAutoInput.value = totalAllowance.toFixed(2);
-                    
-                    const jumlahJarakInput = document.getElementById('jumlah_jarak_terkumpul');
-                    const currentTotal = parseFloat(jumlahJarakInput.value) || 0;
-                    jumlahJarakInput.value = (currentTotal + totalJarak).toFixed(1);
-                    
-                    elaunKmInput.value = "0.85";
                 } else {
-                    kosPengangkutanAutoInput.value = '';
-                    elaunKmInput.value = '';
+                    throw new Error('Gagal menghantar permohonan');
                 }
-                calculateTotal();
-            }
-            
-            function updateTravelDuration() {
-                const jam = parseInt(jamPerjalananInput.value) || 0;
-                const minit = parseInt(minitPerjalananInput.value) || 0;
-                const totalHours = jam + (minit / 60);
                 
-                masaPerjalananInput.value = totalHours;
-                
-                calculateArrivalTime();
-                calculateReturnTime();
+            } catch (error) {
+                console.error('Error:', error);
+                errorMessage.textContent = '❌ Ralat: ' + error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                // Hide loading state
+                submitBtn.disabled = false;
+                loading.classList.remove('show');
             }
+        }
 
-            function calculateArrivalTime() {
-                const masaPergi = masaPergiInput.value;
-                const tempohJam = parseFloat(masaPerjalananInput.value) || 0;
+        // Load claims from Google Sheets
+        async function loadClaims() {
+            const container = document.getElementById('claimsContainer');
+            container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">⏳ Sedang memuatkan data...</p>';
+            
+            try {
+                const response = await fetch(SCRIPT_URL + '?action=get&callback=handleClaimsData', {
+                    method: 'GET'
+                });
                 
-                if (masaPergi && tempohJam > 0) {
-                    const [hours, minutes] = masaPergi.split(':').map(Number);
-                    const pergiMinutes = hours * 60 + minutes;
-                    const sampaiMinutes = pergiMinutes + (tempohJam * 60);
-                    
-                    const sampaiHours = Math.floor(sampaiMinutes / 60) % 24;
-                    const sampaiMins = Math.floor(sampaiMinutes % 60);
-                    
-                    masaSampaiInput.value = `${sampaiHours.toString().padStart(2, '0')}:${sampaiMins.toString().padStart(2, '0')}`;
-                } else {
-                    masaSampaiInput.value = '';
+                if (!response.ok) {
+                    throw new Error('Gagal memuatkan data');
                 }
-            }
-            
-            function calculateReturnTime() {
-                const masaBalik = masaBalikInput.value;
-                const tempohJam = parseFloat(masaPerjalananInput.value) || 0;
                 
-                if (masaBalik && tempohJam > 0) {
-                    const [hours, minutes] = masaBalik.split(':').map(Number);
-                    const balikMinutes = hours * 60 + minutes;
-                    const tibaMinutes = balikMinutes + (tempohJam * 60);
-                    
-                    const tibaHours = Math.floor(tibaMinutes / 60) % 24;
-                    const tibaMins = Math.floor(tibaMinutes % 60);
-                    
-                    masaTibaInput.value = `${tibaHours.toString().padStart(2, '0')}:${tibaMins.toString().padStart(2, '0')}`;
-                } else {
-                    masaTibaInput.value = '';
-                }
-            }
-
-            function calculateDailyAllowance() {
-                const bilanganHari = parseInt(bilanganHariInput.value) || 0;
-                const kadarHarian = parseFloat(kadarElaunHarianSelect.value) || 0;
+                // Handle JSONP response
+                const script = document.createElement('script');
+                script.src = SCRIPT_URL + '?action=get&callback=handleClaimsData&_=' + Date.now();
+                document.head.appendChild(script);
                 
-                if (bilanganHari > 0 && kadarHarian > 0) {
-                    const totalDailyAllowance = bilanganHari * kadarHarian;
-                    elaunHarianInput.value = totalDailyAllowance.toFixed(2);
-                } else {
-                    elaunHarianInput.value = '';
-                }
-                calculateTotal();
-            }
-
-            function calculateAccommodationAllowance() {
-                const bilanganMalam = parseInt(bilanganMalamInput.value) || 0;
-                const kadarPenginapan = parseFloat(kadarElaunPenginapanSelect.value) || 0;
-                
-                if (bilanganMalam > 0 && kadarPenginapan > 0) {
-                    const totalAccommodationAllowance = bilanganMalam * kadarPenginapan;
-                    elaunPenginapanInput.value = totalAccommodationAllowance.toFixed(2);
-                } else {
-                    elaunPenginapanInput.value = '';
-                }
-                calculateTotal();
-            }
-
-            function calculateTotal() {
-                let total = 0;
-                
-                const kos_pengangkutan = parseFloat(document.getElementById('kos_pengangkutan').value) || 0;
-                const kos_pengangkutan_auto = parseFloat(document.getElementById('kos_pengangkutan_auto').value) || 0;
-                const kos_penginapan = parseFloat(document.getElementById('kos_penginapan').value) || 0;
-                const kos_tol = parseFloat(document.getElementById('kos_tol').value) || 0;
-                const kos_lain = parseFloat(document.getElementById('kos_lain').value) || 0;
-                const elaun_harian = parseFloat(document.getElementById('elaun_harian').value) || 0;
-                const elaun_penginapan = parseFloat(document.getElementById('elaun_penginapan').value) || 0;
-                
-                total = Math.max(kos_pengangkutan, kos_pengangkutan_auto) + kos_penginapan + kos_tol + kos_lain + elaun_harian + elaun_penginapan;
-                
-                jumlahInput.value = total.toFixed(2);
-                
-                if (kos_pengangkutan_auto > kos_pengangkutan && kos_pengangkutan_auto > 0) {
-                    document.getElementById('kos_pengangkutan').value = kos_pengangkutan_auto;
-                }
-            }
-        }
-
-        // Form submission using form POST to new tab
-        function setupForm() {
-            const form = document.getElementById('claim-form');
-            const submitBtn = document.getElementById('submit-btn');
-            const submitText = document.getElementById('submit-text');
-            const submitLoading = document.getElementById('submit-loading');
-
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-
-                // Show loading state
-                submitBtn.classList.add('loading');
-                submitText.classList.add('hidden');
-                submitLoading.classList.remove('hidden');
-                submitBtn.disabled = true;
-
-                try {
-                    const formData = new FormData(form);
-                    
-                    // Validate required fields
-                    const requiredFields = ['nama', 'jawatan', 'gred', 'bahagian', 'tarikh_mula', 'tarikh_tamat', 'tempat_asal', 'destinasi', 'tujuan'];
-                    const missingFields = requiredFields.filter(field => !formData.get(field) || formData.get(field).toString().trim() === '');
-                    
-                    if (missingFields.length > 0) {
-                        throw new Error(`Sila lengkapkan medan yang diperlukan: ${missingFields.join(', ')}`);
-                    }
-
-                    if (!googleScriptUrl || googleScriptUrl.trim() === '') {
-                        throw new Error('Google Apps Script URL belum dikonfigurasi. Sila masukkan URL dalam tetapan.');
-                    }
-
-                    // Add metadata
-                    formData.append('id', Date.now().toString());
-                    formData.append('action', 'add');
-
-                    // Create a form and submit to new tab
-                    const tempForm = document.createElement('form');
-                    tempForm.method = 'POST';
-                    tempForm.action = googleScriptUrl;
-                    tempForm.target = '_blank';
-                    tempForm.style.display = 'none';
-
-                    // Add all form data as hidden inputs
-                    for (let [key, value] of formData.entries()) {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = value;
-                        tempForm.appendChild(input);
-                    }
-
-                    document.body.appendChild(tempForm);
-                    tempForm.submit();
-                    document.body.removeChild(tempForm);
-
-                    showNotification("Permohonan tuntutan sedang dihantar ke Google Sheets! Sila semak tab baru untuk pengesahan.", "success");
-                    
-                    form.reset();
-                    // Reset default values
-                    document.getElementById('nama').value = "AHMAD HAFIZAN BIN ABD HALIM";
-                    document.getElementById('jawatan').value = "PEMBANTU HAL EHWAL ISLAM";
-                    document.getElementById('gred').value = "S1";
-                    document.getElementById('bahagian').value = "PEJABAT AGAMA DAERAH SEBERANG PERAI TENGAH";
-                    document.getElementById('tahun_tuntutan').value = "2025";
-                    document.getElementById('no_kenderaan').value = "PNP4264";
-                    
-                    // Switch to list tab and reload data after a delay
-                    setTimeout(() => {
-                        document.getElementById('tab-list').click();
-                    }, 2000);
-                    
-                } catch (error) {
-                    console.error('Error submitting form:', error);
-                    showNotification(error.message || "Ralat semasa menyimpan permohonan.", "error");
-                } finally {
-                    // Hide loading state
-                    submitBtn.classList.remove('loading');
-                    submitText.classList.remove('hidden');
-                    submitLoading.classList.add('hidden');
-                    submitBtn.disabled = false;
-                }
-            });
-        }
-
-        // Update claims list
-        function updateClaimsList(data) {
-            const container = document.getElementById('claims-list');
-            const emptyState = document.getElementById('empty-state');
-
-            if (data.length === 0) {
-                emptyState.classList.remove('hidden');
-                const existingClaims = container.querySelectorAll('.claim-item');
-                existingClaims.forEach(item => item.remove());
-                return;
-            }
-
-            emptyState.classList.add('hidden');
-
-            const existingClaims = container.querySelectorAll('.claim-item');
-            existingClaims.forEach(item => item.remove());
-
-            data.forEach(claim => {
-                container.appendChild(createClaimElement(claim));
-            });
-        }
-
-        // Create claim element
-        function createClaimElement(claim) {
-            const div = document.createElement('div');
-            div.className = 'claim-item bg-gray-50 border border-gray-200 rounded-lg p-4';
-
-            const statusColor = getStatusColor(claim.Status || claim.status || 'Dalam Proses');
-            const formattedAmount = new Intl.NumberFormat('ms-MY', {
-                style: 'currency',
-                currency: 'MYR'
-            }).format(parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0));
-
-            const monthNames = {
-                '01': 'Jan', '02': 'Feb', '03': 'Mac', '04': 'Apr',
-                '05': 'Mei', '06': 'Jun', '07': 'Jul', '08': 'Ogs',
-                '09': 'Sep', '10': 'Okt', '11': 'Nov', '12': 'Dis'
-            };
-
-            const tahun = claim['Tahun Tuntutan'] || claim.tahun_tuntutan || '';
-            const bulan = claim['Bulan Tuntutan'] || claim.bulan_tuntutan || '';
-            const monthBadge = tahun && bulan ? 
-                `<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">
-                    ${monthNames[bulan]} ${tahun}
-                </span>` : '';
-
-            div.innerHTML = `
-                <div class="flex justify-between items-start mb-3">
-                    <div class="flex-1">
-                        <h3 class="font-semibold text-gray-800">${claim['Nama Pemohon'] || claim.nama_pemohon || ''}</h3>
-                        <p class="text-sm text-gray-600">${claim['Jawatan'] || claim.jawatan || ''} (${claim['Gred'] || claim.gred || ''}) - ${claim['Bahagian'] || claim.bahagian || ''}</p>
-                        <div class="flex items-center space-x-2 mt-1">
-                            <p class="text-xs text-blue-600">${claim['Kategori'] || claim.kategori_perjalanan || ''}</p>
-                            ${monthBadge}
-                        </div>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">
-                            ${claim['Status'] || claim.status || 'Dalam Proses'}
-                        </span>
-                    </div>
-                </div>
-                <div class="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                        <p><strong>Perjalanan:</strong> ${claim['Tempat Asal'] || claim.tempat_asal || ''} → ${claim['Destinasi'] || claim.destinasi || ''}</p>
-                        <p><strong>Tarikh:</strong> ${claim['Tarikh Mula'] || claim.tarikh_mula || ''} - ${claim['Tarikh Tamat'] || claim.tarikh_tamat || ''}</p>
-                        <p><strong>Pengangkutan:</strong> ${claim['Pengangkutan'] || claim.jenis_pengangkutan || ''}</p>
-                        ${(claim['Jarak (KM)'] || claim.jarak) > 0 ? `<p><strong>Jarak:</strong> ${claim['Jarak (KM)'] || claim.jarak || 0} KM</p>` : ''}
-                    </div>
-                    <div>
-                        <p><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                        <div class="text-xs text-gray-600 mt-1">
-                            <p>Pengangkutan: RM${parseFloat(claim['Kos Pengangkutan'] || claim.kos_pengangkutan || 0).toFixed(2)}</p>
-                            <p>Tol: RM${parseFloat(claim['Kos Tol'] || claim.kos_tol || 0).toFixed(2)} | Penginapan: RM${parseFloat(claim['Kos Penginapan'] || claim.kos_penginapan || 0).toFixed(2)}</p>
-                            <p>Elaun Harian: RM${parseFloat(claim['Elaun Harian'] || claim.elaun_harian || 0).toFixed(2)} | Elaun Penginapan: RM${parseFloat(claim['Elaun Penginapan'] || claim.elaun_penginapan || 0).toFixed(2)}</p>
-                            <p>Lain-lain: RM${parseFloat(claim['Kos Lain'] || claim.kos_lain || 0).toFixed(2)} | No. Kebenaran: ${claim['No Kebenaran'] || claim.no_kebenaran || 'Tiada'}</p>
-                        </div>
-                        <p class="mt-1"><strong>Tujuan:</strong> ${(claim['Tujuan'] || claim.tujuan || '').substring(0, 50)}${(claim['Tujuan'] || claim.tujuan || '').length > 50 ? '...' : ''}</p>
-                        ${(claim['No Kenderaan'] || claim.no_kenderaan) ? `<p><strong>No. Kenderaan:</strong> ${claim['No Kenderaan'] || claim.no_kenderaan}</p>` : ''}
-                    </div>
-                </div>
-            `;
-
-            return div;
-        }
-
-        // Get status color
-        function getStatusColor(status) {
-            switch (status) {
-                case 'Dalam Proses':
-                    return 'bg-yellow-100 text-yellow-800';
-                case 'Diluluskan':
-                    return 'bg-green-100 text-green-800';
-                case 'Ditolak':
-                    return 'bg-red-100 text-red-800';
-                default:
-                    return 'bg-gray-100 text-gray-800';
-            }
-        }
-
-        // Update total count
-        function updateTotalCount(count) {
-            document.getElementById('total-count').textContent = count;
-        }
-
-        // Show notification
-        function showNotification(message, type = 'info') {
-            const notification = document.createElement('div');
-            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
-                type === 'success' ? 'bg-green-500 text-white' :
-                type === 'error' ? 'bg-red-500 text-white' :
-                'bg-blue-500 text-white'
-            }`;
-            notification.textContent = message;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.remove();
-            }, 5000);
-        }
-
-        // Print claims list
-        function printClaimsList() {
-            if (currentData.length === 0) {
-                showNotification("Tiada tuntutan untuk dicetak", "error");
-                return;
-            }
-
-            const printWindow = window.open('', '_blank');
-            const printContent = generatePrintContent();
-            
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            
-            printWindow.onload = function() {
-                printWindow.print();
-                printWindow.close();
-            };
-        }
-
-        // Generate print content
-        function generatePrintContent() {
-            const currentDate = new Date().toLocaleDateString('ms-MY', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-
-            const totalAmount = currentData.reduce((sum, claim) => {
-                return sum + parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0);
-            }, 0);
-            
-            const formattedTotal = new Intl.NumberFormat('ms-MY', {
-                style: 'currency',
-                currency: 'MYR'
-            }).format(totalAmount);
-
-            let claimsHtml = '';
-            currentData.forEach((claim, index) => {
-                const formattedAmount = new Intl.NumberFormat('ms-MY', {
-                    style: 'currency',
-                    currency: 'MYR'
-                }).format(parseFloat(claim['Jumlah Tuntutan'] || claim.jumlah_tuntutan || 0));
-
-                claimsHtml += `
-                    <div class="claim-item" style="border: 1px solid #ccc; margin-bottom: 15px; padding: 15px; page-break-inside: avoid;">
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 10px;">
-                            <div style="flex: 1;">
-                                <h3 style="font-weight: bold; margin: 0 0 5px 0;">${index + 1}. ${claim['Nama Pemohon'] || claim.nama_pemohon || ''}</h3>
-                                <p style="margin: 0; font-size: 14px;">${claim['Jawatan'] || claim.jawatan || ''} (${claim['Gred'] || claim.gred || ''}) - ${claim['Bahagian'] || claim.bahagian || ''}</p>
-                            </div>
-                            <div style="text-align: right;">
-                                <span style="background: #f0f0f0; padding: 4px 8px; border-radius: 12px; font-size: 12px;">
-                                    ${claim['Status'] || claim.status || 'Dalam Proses'}
-                                </span>
-                            </div>
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; font-size: 14px;">
-                            <div>
-                                <p style="margin: 3px 0;"><strong>Perjalanan:</strong> ${claim['Tempat Asal'] || claim.tempat_asal || ''} → ${claim['Destinasi'] || claim.destinasi || ''}</p>
-                                <p style="margin: 3px 0;"><strong>Tarikh:</strong> ${claim['Tarikh Mula'] || claim.tarikh_mula || ''} - ${claim['Tarikh Tamat'] || claim.tarikh_tamat || ''}</p>
-                                <p style="margin: 3px 0;"><strong>Pengangkutan:</strong> ${claim['Pengangkutan'] || claim.jenis_pengangkutan || ''}</p>
-                                ${(claim['Jarak (KM)'] || claim.jarak) > 0 ? `<p style="margin: 3px 0;"><strong>Jarak:</strong> ${claim['Jarak (KM)'] || claim.jarak || 0} KM</p>` : ''}
-                            </div>
-                            <div>
-                                <p style="margin: 3px 0;"><strong>Jumlah Tuntutan:</strong> ${formattedAmount}</p>
-                                <p style="margin: 3px 0;"><strong>Tujuan:</strong> ${claim['Tujuan'] || claim.tujuan || ''}</p>
-                            </div>
-                        </div>
+            } catch (error) {
+                console.error('Error loading claims:', error);
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #e53e3e;">
+                        <p>❌ Gagal memuatkan data: ${error.message}</p>
+                        <button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                            🔄 Cuba Lagi
+                        </button>
                     </div>
                 `;
-            });
-
-            return `
-                <!DOCTYPE html>
-                <html>
-                <head>
-                    <meta charset="UTF-8">
-                    <title>Senarai Tuntutan Perjalanan</title>
-                    <style>
-                        body { 
-                            font-family: Arial, sans-serif; 
-                            margin: 0; 
-                            padding: 20px; 
-                            background: white;
-                            color: black;
-                        }
-                        .print-header { 
-                            text-align: center; 
-                            margin-bottom: 30px; 
-                            border-bottom: 2px solid #000; 
-                            padding-bottom: 15px; 
-                        }
-                        .print-date { 
-                            text-align: right; 
-                            font-size: 12px; 
-                            margin-bottom: 20px; 
-                        }
-                        .summary { 
-                            background: #f9f9f9; 
-                            padding: 15px; 
-                            margin-bottom: 20px; 
-                            border: 1px solid #ddd; 
-                        }
-                        h1 { margin: 0; font-size: 24px; }
-                        h2 { margin: 0; font-size: 18px; color: #666; }
-                        @media print {
-                            body { margin: 0; }
-                            .claim-item { page-break-inside: avoid; }
-                        }
-                    </style>
-                </head>
-                <body>
-                    <div class="print-header">
-                        <h1>SENARAI TUNTUTAN PERJALANAN DALAM NEGERI</h1>
-                        <h2>Kerajaan Malaysia</h2>
-                    </div>
-                    
-                    <div class="print-date">
-                        Tarikh Cetak: ${currentDate}
-                    </div>
-                    
-                    <div class="summary">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: center;">
-                            <div>
-                                <strong>Jumlah Permohonan</strong><br>
-                                <span style="font-size: 24px; color: #2563eb;">${currentData.length}</span>
-                            </div>
-                            <div>
-                                <strong>Jumlah Keseluruhan</strong><br>
-                                <span style="font-size: 24px; color: #16a34a;">${formattedTotal}</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <h3 style="margin: 20px 0 15px 0; border-bottom: 1px solid #ccc; padding-bottom: 5px;">
-                        Senarai Terperinci
-                    </h3>
-                    
-                    ${claimsHtml}
-                    
-                    <div style="margin-top: 40px; text-align: center; font-size: 12px; color: #666; border-top: 1px solid #ccc; padding-top: 15px;">
-                        Dokumen ini dijana secara automatik pada ${currentDate}
-                    </div>
-                </body>
-                </html>
-            `;
+            }
         }
 
-        // Setup refresh button
-        function setupRefreshButton() {
-            const refreshBtn = document.getElementById('refresh-btn');
-            refreshBtn.addEventListener('click', async () => {
-                refreshBtn.disabled = true;
-                refreshBtn.innerHTML = '<span>🔄</span><span>Memuat...</span>';
-                
-                try {
-                    await loadData();
-                    showNotification('Data berjaya dimuat semula dari Google Sheets', 'success');
-                } catch (error) {
-                    showNotification('Ralat memuat semula data', 'error');
-                } finally {
-                    refreshBtn.disabled = false;
-                    refreshBtn.innerHTML = '<span>🔄</span><span>Muat Semula</span>';
+        // Handle JSONP callback for claims data
+        window.handleClaimsData = function(response) {
+            const container = document.getElementById('claimsContainer');
+            
+            if (response.success && response.data) {
+                if (response.data.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">📋 Tiada tuntutan dijumpai</p>';
+                    return;
                 }
-            });
+                
+                let tableHTML = `
+                    <table class="claims-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nama</th>
+                                <th>Tarikh</th>
+                                <th>Destinasi</th>
+                                <th>Jumlah (RM)</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+                
+                response.data.forEach(claim => {
+                    const statusClass = getStatusClass(claim.Status || 'Dalam Proses');
+                    tableHTML += `
+                        <tr>
+                            <td data-label="ID">${claim.ID || ''}</td>
+                            <td data-label="Nama">${claim['Nama Pemohon'] || ''}</td>
+                            <td data-label="Tarikh">${claim['Tarikh Mula'] || ''} - ${claim['Tarikh Tamat'] || ''}</td>
+                            <td data-label="Destinasi">${claim['Tempat Asal'] || ''} → ${claim.Destinasi || ''}</td>
+                            <td data-label="Jumlah">RM ${parseFloat(claim['Jumlah Tuntutan'] || 0).toFixed(2)}</td>
+                            <td data-label="Status"><span class="status-badge ${statusClass}">${claim.Status || 'Dalam Proses'}</span></td>
+                        </tr>
+                    `;
+                });
+                
+                tableHTML += '</tbody></table>';
+                container.innerHTML = tableHTML;
+                
+            } else {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: #e53e3e;">
+                        <p>❌ Gagal memuatkan data: ${response.error || 'Unknown error'}</p>
+                        <button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
+                            🔄 Cuba Lagi
+                        </button>
+                    </div>
+                `;
+            }
+        };
+
+        // Get status CSS class
+        function getStatusClass(status) {
+            switch (status.toLowerCase()) {
+                case 'diluluskan':
+                case 'approved':
+                    return 'status-approved';
+                case 'dalam proses':
+                case 'processing':
+                    return 'status-processing';
+                default:
+                    return 'status-pending';
+            }
         }
 
-        // Initialize app when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            setupTabs();
-            setupForm();
-            setupCostCalculation();
-            setupRefreshButton();
-            loadData();
-        });
+        // Format time input as user types
+        function formatTimeInput(input) {
+            let value = input.value.replace(/[^\d:APMapm\s]/g, '');
+            
+            // Auto-format time pattern
+            if (value.length >= 1 && !value.includes(':')) {
+                if (value.length === 1 && parseInt(value) > 1) {
+                    value = '0' + value + ':';
+                } else if (value.length === 2) {
+                    const hour = parseInt(value);
+                    if (hour > 12) {
+                        value = value.charAt(0) + ':' + value.charAt(1);
+                    } else {
+                        value = value + ':';
+                    }
+                }
+            }
+            
+            // Auto-add AM/PM if time is complete but missing AM/PM
+            const timePattern = /^(\d{1,2}):(\d{2})$/;
+            const match = value.match(timePattern);
+            if (match && !value.includes('AM') && !value.includes('PM')) {
+                const hour = parseInt(match[1]);
+                if (hour >= 1 && hour <= 12) {
+                    // Don't auto-add AM/PM, let user decide
+                }
+            }
+            
+            input.value = value.toUpperCase();
+        }
+
+        // Format duration input as user types
+        function formatDurationInput(input) {
+            let value = input.value.replace(/[^\d:]/g, '');
+            
+            // Auto-format duration pattern (H:MM)
+            if (value.length >= 1 && !value.includes(':')) {
+                if (value.length === 1) {
+                    // Single digit, wait for more input
+                } else if (value.length === 2) {
+                    value = value.charAt(0) + ':' + value.charAt(1);
+                } else if (value.length === 3) {
+                    value = value.charAt(0) + ':' + value.substring(1, 3);
+                }
+            }
+            
+            input.value = value;
+        }
+
+        // Get month name in Malay
+        function getMonthName(monthIndex) {
+            const months = [
+                'Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun',
+                'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'
+            ];
+            return months[monthIndex];
+        }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'994663e686b5473c',t:'MTc2MTQ0NDM0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99470a0cc0bb0c6d',t:'MTc2MTQ1MTE0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
