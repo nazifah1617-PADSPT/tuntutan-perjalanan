@@ -746,8 +746,8 @@
        </div>
        <div class="calc-item"><label>Elaun Penginapan</label>
         <div class="amount">
-         RM <span id="display_elaun_penginapan">0.00</span>
-        </div><input type="hidden" id="elaun_penginapan" name="elaun_penginapan" value="0">
+         RM <input type="number" id="elaun_penginapan" name="elaun_penginapan" step="0.01" value="0" onchange="calculateTotal()" style="background:transparent;border:none;color:white;font-size:1.3rem;font-weight:700;width:80px;text-align:center;">
+        </div>
        </div>
        <div class="calc-item"><label>Kos Lain-lain</label>
         <div class="amount">
@@ -950,7 +950,7 @@
    <div style="background: white; margin: 20px auto; max-width: 800px; border-radius: 16px; position: relative; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);">
     <div style="padding: 20px; border-bottom: 2px solid #e9ecef; display: flex; justify-content: space-between; align-items: center; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 16px 16px 0 0;">
      <h3 style="margin: 0; font-size: 1.3rem; font-weight: 700;" id="pdfModalTitle">📄 Pratonton PDF - Borang Tuntutan</h3>
-     <div><button onclick="printPDF()" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-right: 10px; transition: all 0.3s ease;"> 🖨️ Cetak </button> <button onclick="closePDFModal()" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;"> ✕ Tutup </button>
+     <div><button onclick="printPDF()" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; margin-right: 10px; transition: all 0.3s ease;"> 🖨️ Cetak PDF </button> <button onclick="closePDFModal()" style="background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid rgba(255, 255, 255, 0.3); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-weight: 600; transition: all 0.3s ease;"> ✕ Tutup </button>
      </div>
     </div>
     <div id="pdfContent" style="padding: 40px; background: white; border-radius: 0 0 16px 16px;"><!-- PDF content will be generated here -->
@@ -1379,36 +1379,9 @@
             calculateTotal();
         }
 
-        // Calculate allowances (only accommodation allowance is auto-calculated)
+        // Calculate allowances (manual input only)
         function calculateAllowances() {
-            const gred = document.getElementById('gred').value;
-            const kategori = document.getElementById('kategori_perjalanan').value;
-            const startDate = document.getElementById('tarikh_mula').value;
-            const endDate = document.getElementById('tarikh_tamat').value;
-            
-            let accommodationAllowance = 0;
-            
-            if (gred && startDate && endDate && allowanceRates.accommodation.domestic[gred]) {
-                // Calculate nights automatically
-                const start = new Date(startDate);
-                const end = new Date(endDate);
-                const diffTime = Math.abs(end - start);
-                const bilangan_hari = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-                const bilangan_malam = Math.max(0, bilangan_hari - 1);
-                
-                // Determine if domestic or overseas
-                const isDomestic = kategori === 'Dalam Negeri' || kategori === 'Harian' || kategori === 'Bermalam';
-                
-                if (isDomestic) {
-                    accommodationAllowance = bilangan_malam * allowanceRates.accommodation.domestic[gred];
-                } else {
-                    accommodationAllowance = bilangan_malam * allowanceRates.accommodation.overseas[gred];
-                }
-            }
-            
-            document.getElementById('elaun_penginapan').value = accommodationAllowance.toFixed(2);
-            document.getElementById('display_elaun_penginapan').textContent = accommodationAllowance.toFixed(2);
-            
+            // Elaun penginapan is now manual input only
             calculateTotal();
         }
 
@@ -1840,7 +1813,6 @@
             // Reset all calculations to zero
             document.getElementById('display_kos_pengangkutan').textContent = '0.00';
             document.getElementById('display_kos_tol').textContent = '0.00';
-            document.getElementById('display_elaun_penginapan').textContent = '0.00';
             document.getElementById('display_jumlah_keseluruhan').textContent = '0.00';
             
             // Reset hidden fields
@@ -2335,28 +2307,80 @@
 
         // Print PDF function
         function printPDF() {
+            // Create a new window for printing
+            const printWindow = window.open('', '_blank', 'width=800,height=600');
             const printContent = document.getElementById('pdfContent').innerHTML;
-            const originalContent = document.body.innerHTML;
             
-            // Create print styles
-            const printStyles = `
-                <style>
-                    @media print {
-                        body { margin: 0; padding: 20px; font-family: 'Times New Roman', serif; }
-                        @page { margin: 1cm; size: A4; }
-                        table { page-break-inside: avoid; }
-                        tr { page-break-inside: avoid; }
-                        h3 { page-break-after: avoid; }
-                    }
-                </style>
-            `;
+            // Write the content to the new window
+            printWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Borang Tuntutan Perjalanan</title>
+                    <style>
+                        body { 
+                            margin: 0; 
+                            padding: 20px; 
+                            font-family: 'Times New Roman', serif; 
+                            line-height: 1.4; 
+                            color: #000; 
+                        }
+                        @media print {
+                            @page { 
+                                margin: 1cm; 
+                                size: A4; 
+                            }
+                            body { 
+                                margin: 0; 
+                                padding: 15px; 
+                            }
+                            table { 
+                                page-break-inside: avoid; 
+                                width: 100% !important;
+                            }
+                            tr { 
+                                page-break-inside: avoid; 
+                            }
+                            h3 { 
+                                page-break-after: avoid; 
+                                margin-top: 20px;
+                            }
+                            .no-print { 
+                                display: none; 
+                            }
+                        }
+                        @media screen {
+                            body {
+                                max-width: 800px;
+                                margin: 0 auto;
+                                background: white;
+                            }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${printContent}
+                    <div class="no-print" style="text-align: center; margin-top: 30px; padding: 20px;">
+                        <button onclick="window.print()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px; margin-right: 10px;">
+                            🖨️ Cetak Sekarang
+                        </button>
+                        <button onclick="window.close()" style="background: #6c757d; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-size: 16px;">
+                            ❌ Tutup
+                        </button>
+                    </div>
+                </body>
+                </html>
+            `);
             
-            document.body.innerHTML = printStyles + printContent;
-            window.print();
-            document.body.innerHTML = originalContent;
+            printWindow.document.close();
             
-            // Reinitialize event handlers after restoring content
-            document.getElementById('claimForm').addEventListener('submit', handleSubmit);
+            // Focus the new window
+            printWindow.focus();
+            
+            // Auto-print after a short delay to ensure content is loaded
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
         }
 
         // Close PDF modal
@@ -2372,5 +2396,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'994756f385430c6d',t:'MTc2MTQ1NDI5OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9947a43632f40c6d',t:'MTc2MTQ1NzQ2My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
