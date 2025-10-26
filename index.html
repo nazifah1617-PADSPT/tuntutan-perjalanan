@@ -937,11 +937,14 @@
         const defaultConfig = {
             system_title: "SISTEM TUNTUTAN PERJALANAN",
             department_name: "JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG", 
-            footer_text: "© 2025 JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG"
+            footer_text: "© 2025 JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG",
+            script_url: "https://script.google.com/macros/s/AKfycby1NhHmxybdyjxAI5R1DyRFsxmqD4fLYXFi9dT1hkCh2DN_2FMbCi_qm8Tu62mHL5qB1A/exec"
         };
 
-        // Google Apps Script URL
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwGqUcHjbjES5J96aTz-SZ-mKYQeOGUWg0kLaQKotNy_FKtsaZozO2oYw6pz0b6d_0Y/exec';
+        // Data storage variables
+        let allClaims = [];
+        let currentRecordCount = 0;
+        let scriptUrl = "https://script.google.com/macros/s/AKfycby1NhHmxybdyjxAI5R1DyRFsxmqD4fLYXFi9dT1hkCh2DN_2FMbCi_qm8Tu62mHL5qB1A/exec";
 
         // Allowance rates for 2025
         const allowanceRates = {
@@ -991,8 +994,78 @@
             }
         };
 
+        // Google Apps Script functions
+        async function saveToGoogleSheet(claim) {
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'add',
+                        ...claim
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadFromGoogleSheet();
+                    return { success: true };
+                } else {
+                    throw new Error(result.message || 'Gagal menyimpan data');
+                }
+            } catch (error) {
+                throw new Error('Ralat sambungan: ' + error.message);
+            }
+        }
+
+        async function loadFromGoogleSheet() {
+            try {
+                const response = await fetch(scriptUrl + '?action=list');
+                const result = await response.json();
+                
+                if (result.success) {
+                    allClaims = result.data || [];
+                    currentRecordCount = allClaims.length;
+                    updateClaimsDisplay();
+                } else {
+                    throw new Error(result.message || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showMessage('error', 'Ralat memuat data: ' + error.message);
+            }
+        }
+
+        async function deleteFromGoogleSheet(claimId) {
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        action: 'delete',
+                        id: claimId
+                    })
+                });
+                
+                const result = await response.json();
+                if (result.success) {
+                    await loadFromGoogleSheet();
+                    return { success: true };
+                } else {
+                    throw new Error(result.message || 'Gagal memadam data');
+                }
+            } catch (error) {
+                throw new Error('Ralat sambungan: ' + error.message);
+            }
+        }
+
         // Initialize system
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
+            
             // Generate unique ID for new claim
             document.getElementById('claimId').value = 'TC' + Date.now();
             
@@ -1008,6 +1081,9 @@
             if (window.elementSdk) {
                 initializeElementSdk();
             }
+            
+            // Load existing claims from Google Sheet
+            await loadFromGoogleSheet();
         });
 
         // Element SDK initialization
@@ -1028,7 +1104,8 @@
                 mapToEditPanelValues: (config) => new Map([
                     ["system_title", config.system_title || defaultConfig.system_title],
                     ["department_name", config.department_name || defaultConfig.department_name],
-                    ["footer_text", config.footer_text || defaultConfig.footer_text]
+                    ["footer_text", config.footer_text || defaultConfig.footer_text],
+                    ["script_url", config.script_url || defaultConfig.script_url]
                 ])
             });
         }
@@ -1278,30 +1355,70 @@
             try {
                 const formData = new FormData(document.getElementById('claimForm'));
                 
-                // Submit to Google Apps Script
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
+                // Get script URL from config
+                const scriptUrl = window.elementSdk ? 
+                    (window.elementSdk.config.script_url || defaultConfig.script_url) : 
+                    defaultConfig.script_url;
                 
-                if (response.ok) {
-                    // Open success page in new tab
-                    const newWindow = window.open('', '_blank');
-                    const responseText = await response.text();
-                    newWindow.document.write(responseText);
-                    
-                    // Show success message
-                    successMessage.textContent = '✅ Permohonan berjaya dihantar! Tab baru akan terbuka dengan butiran.';
-                    successMessage.style.display = 'block';
-                    
-                    // Reset form
-                    document.getElementById('claimForm').reset();
-                    document.getElementById('claimId').value = 'TC' + Date.now();
-                    calculateTotal();
-                    
-                } else {
-                    throw new Error('Gagal menghantar permohonan');
-                }
+                // Prepare claim data
+                const claimData = {
+                    id: formData.get('id'),
+                    nama: formData.get('nama'),
+                    jawatan: formData.get('jawatan'),
+                    gred: formData.get('gred'),
+                    bahagian: formData.get('bahagian'),
+                    tahun_tuntutan: formData.get('tahun_tuntutan'),
+                    bulan_tuntutan: formData.get('bulan_tuntutan'),
+                    tarikh_mula: formData.get('tarikh_mula'),
+                    tarikh_tamat: formData.get('tarikh_tamat'),
+                    masa_pergi: formData.get('masa_pergi'),
+                    tempoh_perjalanan: formData.get('tempoh_perjalanan'),
+                    masa_sampai: formData.get('masa_sampai'),
+                    masa_balik: formData.get('masa_balik'),
+                    masa_tiba: formData.get('masa_tiba'),
+                    tempat_asal: formData.get('tempat_asal'),
+                    destinasi: formData.get('destinasi'),
+                    jarak_sehala: parseFloat(formData.get('jarak_sehala')) || 0,
+                    jarak_total: parseFloat(formData.get('jarak_total')) || 0,
+                    pengangkutan: formData.get('pengangkutan'),
+                    no_kenderaan: formData.get('no_kenderaan'),
+                    plaza_tol_masuk: formData.get('plaza_tol_masuk'),
+                    plaza_tol_keluar: formData.get('plaza_tol_keluar'),
+                    tol_pergi: parseFloat(formData.get('tol_pergi')) || 0,
+                    tol_balik: parseFloat(formData.get('tol_balik')) || 0,
+                    catatan_tol: formData.get('catatan_tol'),
+                    kategori_perjalanan: formData.get('kategori_perjalanan'),
+                    tujuan: formData.get('tujuan'),
+                    kos_pengangkutan: parseFloat(formData.get('kos_pengangkutan')) || 0,
+                    kos_tol: parseFloat(formData.get('kos_tol')) || 0,
+                    kos_penginapan: parseFloat(formData.get('kos_penginapan')) || 0,
+                    elaun_harian: parseFloat(formData.get('elaun_harian')) || 0,
+                    elaun_penginapan: parseFloat(formData.get('elaun_penginapan')) || 0,
+                    kos_lain: parseFloat(formData.get('kos_lain')) || 0,
+                    jumlah_keseluruhan: parseFloat(formData.get('jumlah_keseluruhan')) || 0,
+                    status: 'Dalam Proses',
+                    tarikh_hantar: new Date().toISOString()
+                };
+                
+                // Save to Google Sheet
+                await saveToGoogleSheet(claimData);
+                
+                // Show success message
+                successMessage.textContent = '✅ Permohonan tuntutan berjaya disimpan ke Google Sheet!';
+                successMessage.style.display = 'block';
+                
+                // Reset form
+                document.getElementById('claimForm').reset();
+                document.getElementById('claimId').value = 'TC' + Date.now();
+                
+                // Reset calculations
+                document.getElementById('display_kos_pengangkutan').textContent = '0.00';
+                document.getElementById('display_kos_tol').textContent = '0.00';
+                document.getElementById('display_elaun_penginapan').textContent = '0.00';
+                document.getElementById('display_jumlah_keseluruhan').textContent = '0.00';
+                
+                // Switch to list tab to show the new claim
+                showTab('list');
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -1314,91 +1431,125 @@
             }
         }
 
-        // Load claims from Google Sheets
-        async function loadClaims() {
+        // Update claims display
+        function updateClaimsDisplay() {
             const container = document.getElementById('claimsContainer');
-            container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">⏳ Sedang memuatkan data...</p>';
             
-            try {
-                const response = await fetch(SCRIPT_URL + '?action=get&callback=handleClaimsData', {
-                    method: 'GET'
-                });
-                
-                if (!response.ok) {
-                    throw new Error('Gagal memuatkan data');
-                }
-                
-                // Handle JSONP response
-                const script = document.createElement('script');
-                script.src = SCRIPT_URL + '?action=get&callback=handleClaimsData&_=' + Date.now();
-                document.head.appendChild(script);
-                
-            } catch (error) {
-                console.error('Error loading claims:', error);
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #e53e3e;">
-                        <p>❌ Gagal memuatkan data: ${error.message}</p>
-                        <button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                            🔄 Cuba Lagi
-                        </button>
-                    </div>
-                `;
+            if (allClaims.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">📋 Tiada tuntutan dijumpai. Sila tambah tuntutan baru.</p>';
+                return;
             }
+            
+            let tableHTML = `
+                <table class="claims-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nama</th>
+                            <th>Tarikh</th>
+                            <th>Destinasi</th>
+                            <th>Jumlah (RM)</th>
+                            <th>Status</th>
+                            <th>Tindakan</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            // Sort claims by submission date (newest first)
+            const sortedClaims = [...allClaims].sort((a, b) => 
+                new Date(b.tarikh_hantar) - new Date(a.tarikh_hantar)
+            );
+            
+            sortedClaims.forEach(claim => {
+                const statusClass = getStatusClass(claim.status || 'Dalam Proses');
+                const submissionDate = new Date(claim.tarikh_hantar).toLocaleDateString('ms-MY');
+                
+                tableHTML += `
+                    <tr>
+                        <td data-label="ID">${claim.id || ''}</td>
+                        <td data-label="Nama">${claim.nama || ''}</td>
+                        <td data-label="Tarikh">${claim.tarikh_mula || ''} - ${claim.tarikh_tamat || ''}</td>
+                        <td data-label="Destinasi">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
+                        <td data-label="Jumlah">RM ${parseFloat(claim.jumlah_keseluruhan || 0).toFixed(2)}</td>
+                        <td data-label="Status"><span class="status-badge ${statusClass}">${claim.status || 'Dalam Proses'}</span></td>
+                        <td data-label="Tindakan">
+                            <button onclick="deleteClaim('${claim.id}')" 
+                                    style="background: linear-gradient(135deg, #764ba2 0%, #9575cd 100%); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 2px 8px rgba(118, 75, 162, 0.3);">
+                                🗑️ Padam
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            
+            // Add summary info
+            const totalAmount = allClaims.reduce((sum, claim) => sum + (parseFloat(claim.jumlah_keseluruhan) || 0), 0);
+            const summaryHTML = `
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 16px; margin-bottom: 20px; text-align: center;">
+                    <h3 style="margin: 0 0 10px 0;">📊 Ringkasan Tuntutan</h3>
+                    <p style="margin: 0; font-size: 1.1rem;">
+                        <strong>Jumlah Tuntutan:</strong> ${allClaims.length} | 
+                        <strong>Jumlah Keseluruhan:</strong> RM ${totalAmount.toFixed(2)}
+                    </p>
+                </div>
+            `;
+            
+            container.innerHTML = summaryHTML + tableHTML;
         }
 
-        // Handle JSONP callback for claims data
-        window.handleClaimsData = function(response) {
-            const container = document.getElementById('claimsContainer');
-            
-            if (response.success && response.data) {
-                if (response.data.length === 0) {
-                    container.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">📋 Tiada tuntutan dijumpai</p>';
-                    return;
-                }
-                
-                let tableHTML = `
-                    <table class="claims-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama</th>
-                                <th>Tarikh</th>
-                                <th>Destinasi</th>
-                                <th>Jumlah (RM)</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
-                
-                response.data.forEach(claim => {
-                    const statusClass = getStatusClass(claim.Status || 'Dalam Proses');
-                    tableHTML += `
-                        <tr>
-                            <td data-label="ID">${claim.ID || ''}</td>
-                            <td data-label="Nama">${claim['Nama Pemohon'] || ''}</td>
-                            <td data-label="Tarikh">${claim['Tarikh Mula'] || ''} - ${claim['Tarikh Tamat'] || ''}</td>
-                            <td data-label="Destinasi">${claim['Tempat Asal'] || ''} → ${claim.Destinasi || ''}</td>
-                            <td data-label="Jumlah">RM ${parseFloat(claim['Jumlah Tuntutan'] || 0).toFixed(2)}</td>
-                            <td data-label="Status"><span class="status-badge ${statusClass}">${claim.Status || 'Dalam Proses'}</span></td>
-                        </tr>
-                    `;
-                });
-                
-                tableHTML += '</tbody></table>';
-                container.innerHTML = tableHTML;
-                
-            } else {
-                container.innerHTML = `
-                    <div style="text-align: center; padding: 40px; color: #e53e3e;">
-                        <p>❌ Gagal memuatkan data: ${response.error || 'Unknown error'}</p>
-                        <button onclick="loadClaims()" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);">
-                            🔄 Cuba Lagi
-                        </button>
-                    </div>
-                `;
+        // Load claims from Google Sheet
+        async function loadClaims() {
+            await loadFromGoogleSheet();
+        }
+
+        // Delete claim function
+        function deleteClaim(claimId) {
+            // Find the claim to delete
+            const claimToDelete = allClaims.find(claim => claim.id === claimId);
+            if (!claimToDelete) {
+                showMessage('error', '❌ Tuntutan tidak dijumpai');
+                return;
             }
-        };
+
+            // Show inline confirmation
+            const confirmBtn = event.target;
+            const originalText = confirmBtn.innerHTML;
+            confirmBtn.innerHTML = '⚠️ Sahkan Padam?';
+            confirmBtn.style.background = 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)';
+            
+            // Create cancel button
+            const cancelBtn = document.createElement('button');
+            cancelBtn.innerHTML = '❌ Batal';
+            cancelBtn.style.cssText = 'background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; margin-left: 5px;';
+            confirmBtn.parentNode.insertBefore(cancelBtn, confirmBtn.nextSibling);
+
+            // Handle confirmation
+            const handleConfirm = async () => {
+                try {
+                    await deleteFromGoogleSheet(claimId);
+                    showMessage('success', '✅ Tuntutan berjaya dipadam dari Google Sheet');
+                } catch (error) {
+                    showMessage('error', '❌ Ralat: ' + error.message);
+                }
+                cleanup();
+            };
+
+            const cleanup = () => {
+                confirmBtn.innerHTML = originalText;
+                confirmBtn.style.background = 'linear-gradient(135deg, #764ba2 0%, #9575cd 100%)';
+                cancelBtn.remove();
+                confirmBtn.onclick = () => deleteClaim(claimId);
+            };
+
+            confirmBtn.onclick = handleConfirm;
+            cancelBtn.onclick = cleanup;
+
+            // Auto-cancel after 5 seconds
+            setTimeout(cleanup, 5000);
+        }
 
         // Get status CSS class
         function getStatusClass(status) {
@@ -1463,6 +1614,38 @@
             input.value = value;
         }
 
+        // Show message function
+        function showMessage(type, message) {
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            
+            // Hide both messages first
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            
+            if (type === 'error') {
+                errorMessage.textContent = message;
+                errorMessage.style.display = 'block';
+                setTimeout(() => {
+                    errorMessage.style.display = 'none';
+                }, 5000);
+            } else if (type === 'success') {
+                successMessage.textContent = message;
+                successMessage.style.display = 'block';
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            }
+        }
+
+        // Update script URL
+        function updateScriptUrl(url) {
+            scriptUrl = url || "https://script.google.com/macros/s/AKfycby1NhHmxybdyjxAI5R1DyRFsxmqD4fLYXFi9dT1hkCh2DN_2FMbCi_qm8Tu62mHL5qB1A/exec";
+            if (window.elementSdk) {
+                window.elementSdk.setConfig({ script_url: url });
+            }
+        }
+
         // Get month name in Malay
         function getMonthName(monthIndex) {
             const months = [
@@ -1472,5 +1655,5 @@
             return months[monthIndex];
         }
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99470a0cc0bb0c6d',t:'MTc2MTQ1MTE0OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'99472568f57d0c6d',t:'MTc2MTQ1MjI2OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
