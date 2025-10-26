@@ -2038,7 +2038,7 @@
             }
         }
 
-        // Generate summary PDF content for all claims
+        // Generate summary PDF content for all claims (WP1.4 Lampiran C Format)
         function generateSummaryPDFContent() {
             if (allClaims.length === 0) {
                 return '<div style="text-align: center; padding: 40px; font-family: Arial, sans-serif;">Tiada data tuntutan untuk dijana laporan.</div>';
@@ -2051,154 +2051,243 @@
                 return dateA - dateB;
             });
 
-            // Group claims by month and year
-            const groupedClaims = {};
-            sortedClaims.forEach(claim => {
-                const key = `${claim.bulan_tuntutan || 'Tidak Diketahui'} ${claim.tahun_tuntutan || new Date().getFullYear()}`;
-                if (!groupedClaims[key]) {
-                    groupedClaims[key] = [];
-                }
-                groupedClaims[key].push(claim);
-            });
+            // Get the first claim to extract employee details
+            const firstClaim = sortedClaims[0];
+            const currentDate = new Date();
+            const reportMonth = firstClaim.bulan_tuntutan || getMonthName(currentDate.getMonth());
+            const reportYear = firstClaim.tahun_tuntutan || currentDate.getFullYear();
 
             let summaryHTML = `
-                <div style="font-family: 'Times New Roman', serif; line-height: 1.4; color: #000;">
-                    <!-- Header -->
-                    <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #000; padding-bottom: 20px;">
-                        <h1 style="margin: 0; font-size: 18px; font-weight: bold; text-transform: uppercase;">
-                            JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG
-                        </h1>
-                        <h2 style="margin: 10px 0 0 0; font-size: 16px; font-weight: bold;">
-                            LAPORAN RINGKASAN TUNTUTAN PERJALANAN
-                        </h2>
-                        <p style="margin: 5px 0 0 0; font-size: 12px;">
-                            Dijana pada: ${new Date().toLocaleDateString('ms-MY')} | Jumlah Tuntutan: ${allClaims.length}
-                        </p>
+                <div style="font-family: 'Times New Roman', serif; line-height: 1.2; color: #000; font-size: 12px;">
+                    <!-- Header WP1.4 Format -->
+                    <div style="text-align: center; margin-bottom: 25px;">
+                        <div style="border: 2px solid #000; padding: 15px;">
+                            <h1 style="margin: 0; font-size: 14px; font-weight: bold; text-transform: uppercase;">
+                                KERAJAAN NEGERI PULAU PINANG
+                            </h1>
+                            <h2 style="margin: 5px 0; font-size: 13px; font-weight: bold;">
+                                JABATAN HAL EHWAL AGAMA ISLAM PULAU PINANG
+                            </h2>
+                            <div style="margin: 15px 0; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 8px;">
+                                <h3 style="margin: 0; font-size: 12px; font-weight: bold;">
+                                    LAMPIRAN C - TUNTUTAN PERJALANAN HARIAN
+                                </h3>
+                                <p style="margin: 3px 0 0 0; font-size: 11px;">
+                                    (Peraturan 14, Perintah Am Perbendaharaan)
+                                </p>
+                            </div>
+                        </div>
                     </div>
+
+                    <!-- Maklumat Pegawai -->
+                    <div style="margin-bottom: 20px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <tr>
+                                <td style="padding: 4px 8px; width: 20%; font-weight: bold;">Nama:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000; width: 30%;">${firstClaim.nama || ''}</td>
+                                <td style="padding: 4px 8px; width: 20%; font-weight: bold;">No. K/P:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000; width: 30%;">_________________</td>
+                            </tr>
+                            <tr><td colspan="4" style="height: 8px;"></td></tr>
+                            <tr>
+                                <td style="padding: 4px 8px; font-weight: bold;">Jawatan:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000;">${firstClaim.jawatan || ''}</td>
+                                <td style="padding: 4px 8px; font-weight: bold;">Gred:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000;">${firstClaim.gred || ''}</td>
+                            </tr>
+                            <tr><td colspan="4" style="height: 8px;"></td></tr>
+                            <tr>
+                                <td style="padding: 4px 8px; font-weight: bold;">Bahagian/Unit:</td>
+                                <td colspan="3" style="padding: 4px 8px; border-bottom: 1px solid #000;">${firstClaim.bahagian || ''}</td>
+                            </tr>
+                            <tr><td colspan="4" style="height: 8px;"></td></tr>
+                            <tr>
+                                <td style="padding: 4px 8px; font-weight: bold;">Bulan/Tahun:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000;">${reportMonth} ${reportYear}</td>
+                                <td style="padding: 4px 8px; font-weight: bold;">Jumlah Tuntutan:</td>
+                                <td style="padding: 4px 8px; border-bottom: 1px solid #000;">${sortedClaims.length} perjalanan</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Jadual Tuntutan WP1.4 Format -->
+                    <table style="width: 100%; border-collapse: collapse; font-size: 10px; margin-bottom: 20px;">
+                        <thead>
+                            <tr style="background: #f0f0f0;">
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">BIL</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 12%;">TARIKH</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">MASA<br>PERGI</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 20%;">DESTINASI</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 22%;">TUJUAN PERJALANAN</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 8%;">JARAK<br>(KM)</th>
+                                <th colspan="4" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold;">TUNTUTAN (RM)</th>
+                                <th rowspan="2" style="padding: 8px 4px; border: 1px solid #000; text-align: center; font-weight: bold; width: 10%;">JUMLAH<br>(RM)</th>
+                            </tr>
+                            <tr style="background: #f0f0f0;">
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">KENDERAAN</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">TOL</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">ELAUN</th>
+                                <th style="padding: 4px 2px; border: 1px solid #000; text-align: center; font-weight: bold; font-size: 9px; width: 5.5%;">LAIN-LAIN</th>
+                            </tr>
+                        </thead>
+                        <tbody>
             `;
 
             let grandTotal = 0;
             let totalTransport = 0;
             let totalToll = 0;
+            let totalAllowance = 0;
             let totalOthers = 0;
 
-            // Generate content for each month
-            Object.keys(groupedClaims).forEach(monthYear => {
-                const monthClaims = groupedClaims[monthYear];
-                let monthTotal = 0;
-                let monthTransport = 0;
-                let monthToll = 0;
-                let monthOthers = 0;
+            // Generate rows for each claim
+            sortedClaims.forEach((claim, index) => {
+                const transport = parseFloat(claim.kos_pengangkutan || 0);
+                const toll = parseFloat(claim.kos_tol || 0);
+                const allowance = parseFloat(claim.elaun_harian || 0) + parseFloat(claim.elaun_penginapan || 0) + parseFloat(claim.kos_penginapan || 0);
+                const others = parseFloat(claim.kos_lain || 0);
+                const total = parseFloat(claim.jumlah_keseluruhan || 0);
+
+                totalTransport += transport;
+                totalToll += toll;
+                totalAllowance += allowance;
+                totalOthers += others;
+                grandTotal += total;
+
+                // Format tujuan to fit in cell
+                const tujuan = (claim.tujuan || '').length > 80 ? 
+                    (claim.tujuan || '').substring(0, 77) + '...' : 
+                    (claim.tujuan || '');
 
                 summaryHTML += `
-                    <div style="margin-bottom: 30px;">
-                        <h3 style="background: #f0f0f0; padding: 10px; margin: 0 0 15px 0; font-size: 14px; border-left: 4px solid #000; text-transform: uppercase;">
-                            ${monthYear}
-                        </h3>
-                        
-                        <table style="width: 100%; border-collapse: collapse; font-size: 11px; margin-bottom: 15px;">
-                            <thead>
-                                <tr style="background: #e9ecef;">
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Tarikh</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Destinasi</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: left; font-weight: bold;">Tujuan Perjalanan</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: center; font-weight: bold;">Jarak (KM)</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Pengangkutan</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Tol</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Lain-lain</th>
-                                    <th style="padding: 8px; border: 1px solid #000; text-align: right; font-weight: bold;">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <tr>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center;">${index + 1}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 9px;">${formatDateOnly(claim.tarikh_mula)}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center; font-size: 9px;">${formatTimeForDisplay(claim.masa_pergi || '')}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; font-size: 9px; line-height: 1.2;">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; font-size: 8px; line-height: 1.2;">${tujuan}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: center;">${claim.jarak_total || '0'}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${transport.toFixed(2)}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${toll.toFixed(2)}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${allowance.toFixed(2)}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-size: 9px;">${others.toFixed(2)}</td>
+                        <td style="padding: 6px 4px; border: 1px solid #000; text-align: right; font-weight: bold; font-size: 9px;">${total.toFixed(2)}</td>
+                    </tr>
                 `;
-
-                monthClaims.forEach(claim => {
-                    const transport = parseFloat(claim.kos_pengangkutan || 0);
-                    const toll = parseFloat(claim.kos_tol || 0);
-                    const others = parseFloat(claim.kos_lain || 0);
-                    const total = parseFloat(claim.jumlah_keseluruhan || 0);
-
-                    monthTransport += transport;
-                    monthToll += toll;
-                    monthOthers += others;
-                    monthTotal += total;
-
-                    // Display full tujuan without truncation
-                    const tujuan = claim.tujuan || '';
-
-                    summaryHTML += `
-                        <tr>
-                            <td style="padding: 6px; border: 1px solid #ccc;">${formatDateOnly(claim.tarikh_mula)} - ${formatDateOnly(claim.tarikh_tamat)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc;">${claim.tempat_asal || ''} → ${claim.destinasi || ''}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; font-size: 10px; line-height: 1.3;">${tujuan}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: center;">${claim.jarak_total || '0'}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${transport.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${toll.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right;">${others.toFixed(2)}</td>
-                            <td style="padding: 6px; border: 1px solid #ccc; text-align: right; font-weight: bold;">${total.toFixed(2)}</td>
-                        </tr>
-                    `;
-                });
-
-                summaryHTML += `
-                            </tbody>
-                            <tfoot>
-                                <tr style="background: #f8f9fa; font-weight: bold;">
-                                    <td colspan="4" style="padding: 10px; border: 2px solid #000; text-align: center;">JUMLAH ${monthYear.toUpperCase()}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthTransport.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthToll.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right;">RM ${monthOthers.toFixed(2)}</td>
-                                    <td style="padding: 10px; border: 2px solid #000; text-align: right; font-size: 13px;">RM ${monthTotal.toFixed(2)}</td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                `;
-
-                totalTransport += monthTransport;
-                totalToll += monthToll;
-                totalOthers += monthOthers;
-                grandTotal += monthTotal;
             });
 
-            // Grand total summary
-            summaryHTML += `
-                <div style="margin-top: 30px; border-top: 3px solid #000; padding-top: 20px;">
-                    <h3 style="background: #000; color: white; padding: 12px; margin: 0 0 15px 0; font-size: 16px; text-align: center;">
-                        RINGKASAN KESELURUHAN
-                    </h3>
-                    
-                    <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
-                        <tr style="background: #f8f9fa;">
-                            <td style="padding: 12px; border: 2px solid #000; font-weight: bold;">Jumlah Tuntutan:</td>
-                            <td style="padding: 12px; border: 2px solid #000; text-align: right; font-weight: bold;">${allClaims.length} tuntutan</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Pengangkutan:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalTransport.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Tol:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalToll.toFixed(2)}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #000; font-weight: bold;">Jumlah Kos Lain-lain:</td>
-                            <td style="padding: 10px; border: 1px solid #000; text-align: right;">RM ${totalOthers.toFixed(2)}</td>
-                        </tr>
-                        <tr style="background: #000; color: white; font-size: 16px;">
-                            <td style="padding: 15px; border: 2px solid #000; font-weight: bold;">JUMLAH KESELURUHAN:</td>
-                            <td style="padding: 15px; border: 2px solid #000; text-align: right; font-weight: bold;">RM ${grandTotal.toFixed(2)}</td>
-                        </tr>
-                    </table>
-                </div>
+            // Add empty rows to complete the page (minimum 15 rows)
+            const minRows = 15;
+            const emptyRows = Math.max(0, minRows - sortedClaims.length);
+            for (let i = 0; i < emptyRows; i++) {
+                summaryHTML += `
+                    <tr>
+                        <td style="padding: 12px 4px; border: 1px solid #000; text-align: center;">${sortedClaims.length + i + 1}</td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                        <td style="padding: 12px 4px; border: 1px solid #000;"></td>
+                    </tr>
+                `;
+            }
 
-                <!-- Footer -->
-                <div style="margin-top: 30px; text-align: center; font-size: 10px; color: #666; border-top: 1px solid #ccc; padding-top: 15px;">
-                    Laporan Ringkasan dijana secara automatik oleh Sistem Tuntutan Perjalanan<br>
-                    Jabatan Hal Ehwal Agama Islam Pulau Pinang<br>
-                    Tarikh Cetak: ${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}
+            // Total row
+            summaryHTML += `
+                        </tbody>
+                        <tfoot>
+                            <tr style="background: #e9ecef; font-weight: bold;">
+                                <td colspan="6" style="padding: 10px 8px; border: 2px solid #000; text-align: center; font-size: 11px;">JUMLAH KESELURUHAN</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalTransport.toFixed(2)}</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalToll.toFixed(2)}</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalAllowance.toFixed(2)}</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 10px;">RM ${totalOthers.toFixed(2)}</td>
+                                <td style="padding: 10px 4px; border: 2px solid #000; text-align: right; font-size: 12px; font-weight: bold;">RM ${grandTotal.toFixed(2)}</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+
+                    <!-- Ringkasan Jumlah -->
+                    <div style="margin: 20px 0;">
+                        <table style="width: 60%; border-collapse: collapse; font-size: 11px; margin-left: auto;">
+                            <tr>
+                                <td style="padding: 8px; border: 1px solid #000; font-weight: bold; background: #f0f0f0;">RINGKASAN TUNTUTAN:</td>
+                                <td style="padding: 8px; border: 1px solid #000; text-align: right;"></td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 8px; border: 1px solid #000;">Kos Kenderaan:</td>
+                                <td style="padding: 6px 8px; border: 1px solid #000; text-align: right;">RM ${totalTransport.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 8px; border: 1px solid #000;">Kos Tol:</td>
+                                <td style="padding: 6px 8px; border: 1px solid #000; text-align: right;">RM ${totalToll.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 8px; border: 1px solid #000;">Elaun & Penginapan:</td>
+                                <td style="padding: 6px 8px; border: 1px solid #000; text-align: right;">RM ${totalAllowance.toFixed(2)}</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 6px 8px; border: 1px solid #000;">Lain-lain:</td>
+                                <td style="padding: 6px 8px; border: 1px solid #000; text-align: right;">RM ${totalOthers.toFixed(2)}</td>
+                            </tr>
+                            <tr style="background: #f0f0f0; font-weight: bold; font-size: 12px;">
+                                <td style="padding: 10px 8px; border: 2px solid #000;">JUMLAH BESAR:</td>
+                                <td style="padding: 10px 8px; border: 2px solid #000; text-align: right;">RM ${grandTotal.toFixed(2)}</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Tandatangan dan Pengesahan -->
+                    <div style="margin-top: 30px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 11px;">
+                            <tr>
+                                <td style="width: 50%; padding: 15px; border: 1px solid #000; vertical-align: top;">
+                                    <div style="text-align: center;">
+                                        <strong>PEMOHON</strong><br><br>
+                                        <div style="height: 50px; margin: 10px 0;"></div>
+                                        <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 40px;">
+                                            <strong>${firstClaim.nama || ''}</strong><br>
+                                            ${firstClaim.jawatan || ''}<br><br>
+                                            Tarikh: _______________
+                                        </div>
+                                    </div>
+                                </td>
+                                <td style="width: 50%; padding: 15px; border: 1px solid #000; vertical-align: top;">
+                                    <div style="text-align: center;">
+                                        <strong>PENGESAHAN KETUA JABATAN</strong><br><br>
+                                        <div style="height: 50px; margin: 10px 0;"></div>
+                                        <div style="border-top: 1px solid #000; padding-top: 5px; margin-top: 40px;">
+                                            <strong>( _________________________ )</strong><br>
+                                            Ketua Jabatan<br><br>
+                                            Tarikh: _______________<br>
+                                            Cop Rasmi: _______________
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <!-- Catatan Kaki -->
+                    <div style="margin-top: 20px; font-size: 9px; color: #666;">
+                        <p style="margin: 5px 0;"><strong>CATATAN:</strong></p>
+                        <p style="margin: 2px 0;">1. Borang ini hendaklah dikemukakan bersama-sama dengan resit-resit yang berkaitan.</p>
+                        <p style="margin: 2px 0;">2. Tuntutan hendaklah dikemukakan dalam tempoh 6 bulan dari tarikh perjalanan.</p>
+                        <p style="margin: 2px 0;">3. Kadar elaun adalah mengikut Perintah Am Perbendaharaan yang terkini.</p>
+                    </div>
+
+                    <!-- Footer -->
+                    <div style="margin-top: 25px; text-align: center; font-size: 9px; color: #666; border-top: 1px solid #ccc; padding-top: 10px;">
+                        <strong>WP1.4 - LAMPIRAN C</strong><br>
+                        Borang Tuntutan Perjalanan Harian (Peraturan 14, Perintah Am Perbendaharaan)<br>
+                        Dijana secara automatik pada: ${new Date().toLocaleDateString('ms-MY')} ${new Date().toLocaleTimeString('ms-MY')}<br>
+                        Jabatan Hal Ehwal Agama Islam Pulau Pinang
+                    </div>
                 </div>
-            </div>
             `;
 
             return summaryHTML;
@@ -2511,5 +2600,5 @@
             }
         });
     </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9948091584b90c6d',t:'MTc2MTQ2MTU5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9948f9d215e61ec5',t:'MTc2MTQ3MTQ1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
